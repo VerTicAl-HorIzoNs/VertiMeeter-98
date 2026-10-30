@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VertiMeeter 0.13.0 channel maps</title>
+<style>
+:root{--bg:#0b0710;--panel:#1a1226;--face:#241936;--edge:#6a3fb5;--hi:#a070ff;--txt:#e6dcff;--dim:#8a78b0;--ok:#7cff9a;--warn:#ffcc66}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font:13px/1.35 "DejaVu Sans",Arial,sans-serif;padding:16px}
+h1{font-size:16px;margin:0 0 4px}h2{font-size:13px;margin:22px 0 6px;color:var(--hi)}
+p.note{color:var(--dim);margin:2px 0 10px;max-width:760px}
+.win{background:var(--panel);border:2px solid var(--edge);max-width:640px;margin:8px 0 14px;box-shadow:4px 4px 0 #000}
+.tb{background:linear-gradient(90deg,#4a2a8a,#2a1750);padding:3px 8px;font-weight:bold}
+.body{padding:10px}
+.row{display:flex;align-items:center;gap:8px;margin:5px 0;flex-wrap:wrap}
+.lab{width:96px;color:var(--dim)}
+.btn{background:var(--face);border:2px outset var(--edge);padding:2px 10px;color:var(--txt);font:inherit;cursor:default}
+.btn.on{border-style:inset;background:#4a2a8a}
+.dd{background:#120b1d;border:2px inset var(--edge);padding:1px 8px;min-width:90px}
+.dd:after{content:" v";color:var(--hi)}
+.cb{display:inline-block;width:13px;height:13px;border:2px inset var(--edge);background:#120b1d;vertical-align:-2px;margin-right:4px;text-align:center;line-height:9px;font-size:11px;color:var(--ok)}
+.cb.x:after{content:"x"}
+table{border-collapse:collapse;width:100%}
+td,th{padding:4px 6px;border-bottom:1px solid #35244f;text-align:left;white-space:nowrap}
+th{color:var(--dim);font-weight:normal}
+.dim{color:var(--dim)}.ok{color:var(--ok)}.warn{color:var(--warn)}
+.strip{display:inline-block;vertical-align:top;width:158px;background:var(--panel);border:2px solid var(--edge);margin:4px 8px 4px 0;padding:6px}
+.strip .nm{background:var(--face);text-align:center;padding:2px;font-weight:bold}
+.box{border:2px inset var(--edge);background:#120b1d;text-align:center;padding:4px;margin:6px 0;min-height:76px;font-size:12px}
+.rt{display:grid;grid-template-columns:1fr 1fr;gap:3px}
+.rt span{background:var(--face);border:2px outset var(--edge);text-align:center;font-size:11px;padding:1px}
+.rt span.on{border-style:inset;background:#4a2a8a}
+.side{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start}
+.leg{color:var(--dim);font-size:12px;max-width:640px}
+</style></head><body>
+<h1>VertiMeeter 0.13.0 - multichannel VBAN / OBAN: mockup</h1>
+<p class="note">Notation: <b>[ Label ]</b> button, <b>[x]</b> / <b>[ ]</b> checkbox, <b>[ field v ]</b> dropdown. Purple on black, Win9x. Nothing here has a default host or IP: addresses only come from what you type.</p>
+
+<h2>1. Input: network strip box (unchanged look, one extra line) and its new child strips</h2>
+<div class="side">
+  <div class="strip"><div class="nm">OBAN Input 1</div>
+    <div class="box"><b>Afro-Vert</b><br>:6990 <span class="ok">●</span> receiving<br><span class="dim" style="font-size:10px">PCM 48k 8ch<br>16 kbps-ish · 0.0%</span></div>
+    <div class="rt"><span class="on">A1</span><span>B1</span><span>A2</span><span>B2</span></div>
+    <p class="leg" style="margin:6px 0 0;width:140px">Takes CH 1-2. Click the box: stream, port, sender and <b>[ Channels... ]</b>.</p></div>
+  <div class="strip"><div class="nm">OBAN 1 CH 3-4</div>
+    <div class="box"><span class="dim">from</span> <b>OBAN Input 1</b><br><b>CH 3-4</b> (stereo)<br><span class="ok">●</span> <span class="dim">fed by the stream</span></div>
+    <div class="rt"><span>A1</span><span>B1</span><span class="on">A2</span><span>B2</span></div>
+    <p class="leg" style="margin:6px 0 0;width:140px">A normal strip: own fader, EQ, mute and A/B routing. Click the box to open the channel list.</p></div>
+  <div class="strip"><div class="nm">OBAN 1 CH 5</div>
+    <div class="box"><span class="dim">from</span> <b>OBAN Input 1</b><br><b>CH 5</b> (mono)<br><span class="ok">●</span> <span class="dim">same on L and R</span></div>
+    <div class="rt"><span>A1</span><span class="on">B1</span><span>A2</span><span>B2</span></div>
+    <p class="leg" style="margin:6px 0 0;width:140px">A single channel becomes a mono strip.</p></div>
+</div>
+
+<h2>2. Input: [ Channels... ] dialog (opens from the network input settings)</h2>
+<div class="win"><div class="tb">Channels - OBAN Input 1</div><div class="body">
+  <div class="row"><span class="lab">Stream has</span><b>8 channels</b> <span class="dim">(read from the sender's header; last seen is remembered)</span></div>
+  <div class="row"><span class="lab">Show</span><span class="dd">8 channels</span> <span class="dim">only needed when no sender is connected yet</span></div>
+  <table>
+    <tr><th>Channels</th><th>Goes to</th><th></th></tr>
+    <tr><td>CH 1-2</td><td><span class="cb x"></span>This strip <span class="dim">(OBAN Input 1)</span></td><td><span class="btn">split</span></td></tr>
+    <tr><td>CH 3-4</td><td><span class="cb x"></span>Own strip <span class="dim">(OBAN 1 CH 3-4)</span></td><td><span class="btn">split</span></td></tr>
+    <tr><td>CH 5</td><td><span class="cb x"></span>Own strip <span class="dim">(OBAN 1 CH 5)</span></td><td><span class="btn on">split</span></td></tr>
+    <tr><td>CH 6</td><td><span class="cb"></span>Own strip</td><td></td></tr>
+    <tr><td>CH 7-8</td><td><span class="cb"></span>Own strip</td><td><span class="btn">split</span></td></tr>
+  </table>
+  <p class="leg">Ticking a row adds a strip to the Virtual Inputs pane (up to 7 extra per stream). Unticking removes it. <b>[ split ]</b> turns a stereo pair into two mono rows (CH 5 and CH 6 above) and back. Mono rows play on both sides of their strip. Streams other than PCM carry 1-2 channels only.</p>
+  <div class="row"><span class="btn">OK</span></div>
+</div></div>
+
+<h2>3. Output: network out dialog (new Channels choices and button)</h2>
+<div class="win"><div class="tb">Network out (OBAN / VBAN) - B1</div><div class="body">
+  <div class="row"><span class="lab">Protocol</span><span class="dd">OBAN (VertiMeeter receivers, more codecs)</span></div>
+  <div class="row"><span class="lab">Host</span><span class="dd" style="min-width:260px">&lt;host or IP address of the receiver&gt;</span></div>
+  <div class="row"><span class="lab">Port</span><span class="dd">6990</span></div>
+  <div class="row"><span class="lab">Stream</span><span class="dd">Vert-Multi</span></div>
+  <div class="row"><span class="lab">Codec</span><span class="dd">OBAN PCM</span></div>
+  <div class="row"><span class="lab">Sample rate</span><span class="dd">48000 Hz</span></div>
+  <div class="row"><span class="lab">Channels</span><span class="dd">8 channels</span> <span class="btn">Channel map...</span> <span class="dim">list: Mono, Stereo, 3 ... 8 (PCM only)</span></div>
+  <div class="row"><span class="lab">PCM format</span><span class="dd">16-bit</span></div>
+  <p class="leg">about 6144 kbps. Mono and Stereo send this bus as before. 3 or more channels send what the channel map says, summed from any buses.</p>
+  <div class="row"><span class="btn on">SEND</span> <span class="btn">OK</span></div>
+</div></div>
+
+<h2>4. Output: [ Channel map... ] (checkbox matrix, one row per channel or pair)</h2>
+<div class="win" style="max-width:760px"><div class="tb">Channel map - B1 -> Vert-Multi (8 ch)</div><div class="body">
+  <table>
+    <tr><th>Channel</th><th>A1</th><th>A2</th><th>B1</th><th>B2</th><th>Mono as</th><th></th></tr>
+    <tr><td>OUT 1-2</td><td><span class="cb"></span></td><td><span class="cb"></span></td><td><span class="cb x"></span></td><td><span class="cb x"></span></td><td class="dim">stereo</td><td><span class="btn">split</span></td></tr>
+    <tr><td>OUT 3-4</td><td><span class="cb x"></span></td><td><span class="cb"></span></td><td><span class="cb"></span></td><td><span class="cb"></span></td><td class="dim">stereo</td><td><span class="btn">split</span></td></tr>
+    <tr><td>OUT 5</td><td><span class="cb"></span></td><td><span class="cb"></span></td><td><span class="cb x"></span></td><td><span class="cb"></span></td><td><span class="dd">L</span></td><td><span class="btn on">split</span></td></tr>
+    <tr><td>OUT 6</td><td><span class="cb"></span></td><td><span class="cb"></span></td><td><span class="cb x"></span></td><td><span class="cb"></span></td><td><span class="dd">R</span></td><td></td></tr>
+    <tr><td>OUT 7-8</td><td><span class="cb"></span></td><td><span class="cb"></span></td><td><span class="cb"></span></td><td><span class="cb"></span></td><td class="dim">stereo</td><td><span class="btn">split</span></td></tr>
+  </table>
+  <p class="leg">Columns are the buses you have. Ticked buses are summed into that channel. A stereo row sends the bus left on the first channel, right on the second. A mono row sends <b>L</b>, <b>R</b> or <b>L+R</b> (the average) of the ticked buses. An empty row sends silence. Summing can go over full scale: the sender status then says "summed channels clipped N samples" (nothing is limited for you).</p>
+  <div class="row"><span class="btn">OK</span></div>
+</div></div>
+</body></html>

@@ -1,0 +1,1082 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VertiMeeter '98 mockup v4</title>
+<style>
+:root{
+  --bg:#0b0b10; --panel:#12101a; --panel2:#1a1726; --border:#4a4560; --borderhi:#8a82a8;
+  --text:#c9c4d8; --dim:#7d7794; --accent:#a64dff; --accenthi:#c18bff; --accentdk:#4b1a7a;
+  --pink:#ff5fa8; --red:#e0304f; --amber:#e8a21c; --teal:#27b7ae; --unlit:#1a1626;
+}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Tahoma,"DejaVu Sans","Noto Sans",sans-serif;font-size:11px;}
+html,body{background:#000;color:var(--text);height:100%;overflow:hidden;}
+#fit{position:absolute;left:0;top:0;width:100%;height:100%}
+.win{width:100%;height:100%;background:var(--bg);border:1px solid var(--borderhi);display:flex;flex-direction:column;position:relative;}
+.titlebar{height:34px;display:flex;align-items:center;justify-content:space-between;padding:0 6px;flex:none;
+  background:linear-gradient(90deg,#1d0636,#4b1a7a 50%,#8a35e0);border-bottom:1px solid var(--accent);}
+.logo{border:1px solid var(--accenthi);background:var(--bg);padding:2px 8px;font-size:14px;color:#fff;}
+.logo b,.logo i{font-size:14px}.logo .m{color:var(--accenthi)}.logo i{color:var(--accent)}.logo small{color:var(--dim);font-size:9px}
+.engstat{color:#fff;font-family:"DejaVu Sans Mono",monospace;padding-right:6px}
+.engstat .g{color:#7dff9b}
+.menubar{height:22px;background:var(--panel);border-bottom:1px solid var(--border);display:flex;flex:none}
+.menubar span{padding:4px 8px;cursor:default}.menubar span:hover{background:var(--accentdk)}
+.main{flex:1;display:flex;gap:4px;padding:6px 6px 0 6px;min-height:0}
+.sec{display:flex;flex-direction:column;min-width:0;gap:4px}
+#main .sec{flex:1 1 auto;min-width:0;border:1px solid var(--accent);padding:4px;background:var(--bg)}
+#main .sec.fxsec{flex:0 0 auto}
+.bar{display:flex;align-items:center;gap:8px;height:28px;flex:none}
+.cap{color:var(--accenthi);font-weight:bold;font-size:10px;letter-spacing:2px;padding:3px 8px;border-top:1px solid var(--accentdk);border-bottom:1px solid var(--accentdk);background:var(--panel);white-space:nowrap}
+.btn{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:0 4px;min-height:18px;cursor:pointer;user-select:none;text-align:center;line-height:16px;white-space:nowrap}
+.btn:hover{border-color:var(--accent)}
+.btn:active{background:var(--bg)}
+.btn.on{background:var(--accent);color:#000;border-color:var(--accenthi);font-weight:bold}
+.btn.mute.on{background:var(--red);color:#fff;border-color:#ff7a90}
+.btn.solo.on{background:var(--amber);color:#000;border-color:#ffd070}
+.btn.mono.on{background:var(--teal);color:#000;border-color:#7fe8e0}
+.btn.rB.on{background:var(--pink);color:#000;border-color:#ffa6cf}
+.btn.rt{font-size:10px;font-weight:bold;width:26px;height:20px;padding:0;line-height:18px}
+.bar .btn{width:34px;height:24px;font-weight:bold;font-size:15px;line-height:21px}
+.bar .btn.plus{width:56px}
+/* wide sliders */
+input[type=range]{-webkit-appearance:none;appearance:none;flex:1;height:22px;background:transparent;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:14px;background:linear-gradient(90deg,var(--accentdk) var(--p,0%),#0b0914 var(--p,0%));border:1px solid var(--borderhi)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:110px;height:20px;margin-top:-4px;background:var(--panel2);border:1px solid var(--borderhi);border-bottom-color:#000;box-shadow:inset 0 0 0 1px #000, inset 0 -3px 0 var(--accent)}
+input[type=range]:disabled{opacity:.4}
+.scroller{flex:1;display:flex;gap:4px;overflow-x:hidden;overflow-y:hidden;min-height:0}
+.strip{flex:none;width:106px;background:var(--panel);border:1px solid var(--border);padding:4px;display:flex;flex-direction:column;gap:3px;position:relative}
+.strip.bus{width:98px}
+.strip.sel{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.sname{height:28px;background:var(--accentdk);border:1px solid var(--accent);color:#fff;font-weight:bold;font-size:10px;display:flex;align-items:center;justify-content:center;text-align:center;line-height:11px;cursor:pointer;padding:1px 2px;overflow:hidden}
+.bname{height:28px;background:var(--accentdk);border:1px solid var(--accent);color:#fff;font-weight:bold;font-size:15px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.dev{border:1px solid var(--border);background:var(--panel);padding:2px 3px;font-size:10px;text-align:center;display:flex;align-items:center;justify-content:center;overflow:hidden;line-height:12px;cursor:pointer}
+.dev:hover{border-color:var(--accent)}
+.dev.info{color:var(--dim);cursor:default}.dev.info:hover{border-color:var(--border)}
+.dev .no{color:var(--red);font-weight:bold;font-size:10px;white-space:nowrap}.dev .miss{color:var(--amber);font-weight:bold;font-size:10px}
+.dev>span{display:block}.dev b{font-size:10px}.dev small{color:var(--dim);font-size:10px}
+.knobs{display:grid;grid-template-columns:40px 40px;justify-content:center}
+.knob{width:40px;height:54px;cursor:ns-resize;display:flex;justify-content:center}
+.knob svg{display:block}
+.fxrow{height:18px;display:flex;gap:2px}
+.fxrow .btn{flex:1;font-size:10px;line-height:14px;min-height:16px}
+.slot{height:76px;flex:none}
+.hwstat{height:76px;border:1px solid var(--border);background:var(--panel);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:10px;line-height:15px}
+.hwstat .v{font-size:14px;color:var(--accenthi);font-weight:bold}
+.apps{display:flex;flex-direction:column;gap:1px}
+.apps .app{border:1px solid var(--border);background:var(--bg);color:var(--accenthi);font-size:10px;padding:0 3px;height:15px;line-height:13px;cursor:pointer;overflow:hidden;white-space:nowrap}
+.apps .app:hover,.apps .add:hover{border-color:var(--accent)}
+.apps .add{border:1px solid var(--border);background:var(--panel2);color:var(--dim);font-size:10px;height:15px;line-height:13px;text-align:center;cursor:pointer}
+.net{border:1px solid var(--border);background:var(--panel);height:76px;font-size:10px;line-height:13px;padding:3px;text-align:center;display:flex;flex-direction:column;justify-content:center;cursor:pointer}
+.net .led{color:var(--accent)}
+.frow{flex:1;display:flex;gap:3px;min-height:130px;justify-content:center}
+.fader{width:44px;position:relative;flex:none}
+.fader canvas,.meter canvas{position:absolute;left:0;top:0}
+.meter{width:22px;position:relative;flex:none}
+.routes{display:grid;grid-template-columns:26px 26px;grid-auto-rows:20px;gap:2px;align-content:start}
+.readout{background:var(--panel);border:1px solid var(--border);color:var(--accenthi);text-align:center;padding:1px 2px;font-family:"DejaVu Sans Mono",monospace;height:19px;line-height:15px}
+.status{height:20px;background:var(--panel);border-top:1px solid var(--border);color:var(--dim);padding:3px 6px;flex:none}
+/* media section */
+.mediasec{flex:none;height:170px;margin:0 6px 6px 6px;border:1px solid var(--accent);background:var(--panel);display:flex;flex-direction:column;padding:4px;gap:4px}
+.mediasec.drag{background:#1d1233;border-style:dashed}
+.mhead{display:flex;align-items:center;gap:8px;height:26px;flex:none}
+.mhead .btn{height:24px;line-height:21px;padding:0 10px}
+.mhead .btn.sq{width:34px;padding:0;font-size:14px}
+.mhead .hint{color:var(--dim);margin-left:auto;font-size:10px}
+.mlist{flex:1;overflow-y:auto;border:1px solid var(--border);background:var(--bg)}
+.mlist::-webkit-scrollbar{width:14px}.mlist::-webkit-scrollbar-track{background:var(--panel)}.mlist::-webkit-scrollbar-thumb{background:var(--border);border:1px solid #000}
+.mrow{display:flex;align-items:center;gap:8px;height:30px;padding:0 6px;border-bottom:1px solid #1d1a28}
+.mrow.sel{background:#1d1233}
+.mrow .btn{height:22px;line-height:19px}
+.mrow .pl{width:30px;padding:0;font-size:12px}
+.mrow .nm{width:300px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text);cursor:pointer}
+.mrow .nm .tag{color:var(--bg);background:var(--teal);font-size:9px;padding:0 3px;margin-left:5px;font-weight:bold}
+.mrow .seek{flex:1;height:14px;background:#050508;border:1px solid var(--border);position:relative;cursor:pointer}
+.mrow .seek i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,var(--accentdk),var(--accent));width:0}
+.mrow .tm{width:92px;text-align:center;font-family:"DejaVu Sans Mono",monospace;color:var(--accenthi)}
+.mrow .lp{width:30px;padding:0}
+.mrow .vol{width:300px;flex:none;display:flex;align-items:center;gap:8px}
+.mrow .vol input{height:16px;min-width:0}
+.mrow .vol input::-webkit-slider-runnable-track{height:8px}
+.mrow .vol input::-webkit-slider-thumb{width:16px;height:16px;margin-top:-5px;box-shadow:inset 0 -3px 0 var(--accent)}
+.mrow .vol span{width:64px;flex:none;white-space:nowrap;text-align:right;font-family:"DejaVu Sans Mono",monospace;color:var(--accenthi)}
+.mrow .rt2{flex:none}.mrow .tm,.mrow .lp,.mrow .rm,.mrow .pl,.mrow .nm{flex:none}
+.mrow .rm{width:26px;padding:0}
+.mempty{color:var(--dim);text-align:center;padding:30px}
+/* menus */
+.menu{position:absolute;z-index:50;background:var(--panel);border:1px solid var(--borderhi);min-width:230px;padding:2px 0;box-shadow:3px 3px 0 #000}
+.menu div{padding:3px 22px 3px 18px;white-space:nowrap;cursor:pointer}
+.menu div:hover{background:var(--accent);color:#000}
+.menu .t{color:var(--dim);cursor:default}.menu .t:hover{background:none;color:var(--dim)}
+.menu .live{color:var(--accenthi);cursor:default}.menu .live:hover{background:none;color:var(--accenthi)}
+.menu .live .dot{color:#7dff9b;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:.2}}
+.menu hr{border:0;border-top:1px solid var(--border);margin:3px 2px}
+.menu .ck::before{content:"\2713 ";margin-left:-14px;color:var(--accenthi)}
+
+.area{flex:1;min-height:0;display:flex;flex-direction:column;position:relative}
+.sec{position:relative}
+.vsplit{flex:none;width:6px;cursor:col-resize;background:var(--accent);opacity:.85;margin:0 -1px}
+.hsplit{flex:none;height:6px;margin:0 6px;cursor:row-resize;background:var(--accent);opacity:.85}
+.vsplit:hover,.hsplit:hover{opacity:1;background:var(--accenthi)}
+.phead{display:none;height:16px;flex:none;background:var(--accentdk);color:#fff;font-size:10px;cursor:move;align-items:center;justify-content:space-between;padding:0 6px;user-select:none}
+.phead .px{cursor:pointer;padding:0 4px}.phead .px:hover{background:var(--red)}
+.rgrip{display:none;position:absolute;right:0;bottom:0;width:16px;height:16px;cursor:nwse-resize;background:linear-gradient(135deg,transparent 50%,var(--accent) 50%);z-index:5}
+.area.custom .main{display:contents}
+.area.custom .vsplit,.area.custom .hsplit{display:none}
+.area.custom .sec,.area.custom .mediasec{position:absolute;margin:0;flex:none;max-width:none;background:var(--bg)}
+.area.custom .sec{border:1px solid var(--accent);padding:4px}
+.area.custom.edit .phead{display:flex}
+.area.custom.edit .rgrip{display:block}
+.area.custom.edit .sec,.area.custom.edit .mediasec{outline:1px dashed var(--accenthi);outline-offset:2px}
+.area.custom.edit{background-image:linear-gradient(#ffffff0a 1px,transparent 1px),linear-gradient(90deg,#ffffff0a 1px,transparent 1px);background-size:8px 8px}
+.strip{min-height:480px}.scroller{overflow-y:auto}.scroller::-webkit-scrollbar{height:0;width:12px}.scroller::-webkit-scrollbar-track{background:var(--panel)}.scroller::-webkit-scrollbar-thumb{background:var(--border);border:1px solid #000}
+.mlist{overflow:auto}.mrow{min-width:1060px}
+.mhead{overflow:hidden}.mhead .hint{flex:1 1 0;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right}
+.mrow .rt2{width:150px;flex:none}
+#tip{position:fixed;display:none;z-index:200;pointer-events:none;background:#0d0a16;border:1px solid var(--accent);color:var(--text);padding:5px 8px;font-size:11px;line-height:15px;box-shadow:3px 3px 0 #000;max-width:460px}
+#tip b{color:var(--accenthi)}#tip i{color:var(--dim)}#tip .v{color:var(--accenthi);font-family:"DejaVu Sans Mono",monospace}
+.rpop{min-width:560px;padding:4px 0}
+.rpop div:hover{background:none;color:inherit}
+.rpop .rrow{display:flex;align-items:center;gap:8px;padding:2px 10px;height:28px;cursor:default}
+.rpop .rhd{padding:3px 10px;color:var(--dim);cursor:default}
+.rpop .rcb{flex:none;width:18px;height:18px;padding:0;border:1px solid var(--borderhi);background:var(--panel2);color:#000;text-align:center;line-height:15px;font-weight:bold;cursor:pointer}
+.rpop .rcb.on{background:var(--accent);border-color:var(--accenthi)}
+.rpop .rbus{flex:none;width:30px;font-weight:bold;color:var(--accenthi);font-size:13px;padding:0}
+.rpop .rbus.b{color:var(--pink)}
+.rpop .rdev{flex:1 1 0;min-width:0;overflow:hidden;text-overflow:ellipsis;padding:0;color:var(--text)}
+.rpop input[type=range]{flex:none;width:170px;height:16px}
+.rpop input[type=range]::-webkit-slider-runnable-track{height:8px}
+.rpop input[type=range]::-webkit-slider-thumb{width:16px;height:16px;margin-top:-5px;box-shadow:inset 0 -3px 0 var(--accent)}
+.rpop .rrd{flex:none;width:70px;text-align:right;font-family:"DejaVu Sans Mono",monospace;color:var(--accenthi)}
+.rpop .rfoot{display:flex;gap:6px;padding:4px 10px 2px;cursor:default}
+.rpop .rfoot .btn{padding:0 10px;cursor:pointer}
+.fxbody{display:flex;flex-direction:column;gap:6px;padding:2px;overflow:auto;min-width:150px}
+.fxbox{border:1px solid var(--border);background:var(--panel);padding:4px;display:flex;flex-direction:column;gap:3px;align-items:stretch}
+.fxbox .btn{height:22px;line-height:19px}.fxbox .fxon.on{background:var(--accent);color:#000;font-weight:bold}.fxbox .sm{font-size:10px;height:18px;line-height:15px}
+.fxbox .knobs{justify-content:center}
+.dcap{color:var(--accenthi);font-size:10px;font-weight:bold;letter-spacing:1px;padding:2px 0;border-bottom:1px solid var(--accentdk);margin:4px 0}
+.dlg{position:absolute;background:var(--panel);border:1px solid var(--accent);box-shadow:4px 4px 0 #000;max-height:900px;display:flex;flex-direction:column}
+.dlg .dh{flex:none;height:20px;background:linear-gradient(90deg,#1d0636,#4b1a7a 60%,#8a35e0);color:#fff;font-weight:bold;display:flex;align-items:center;justify-content:space-between;padding:0 6px;cursor:move;user-select:none}
+.dlg .dh .px{cursor:pointer;padding:0 5px}.dlg .dh .px:hover{background:var(--red)}
+.dlg .db{padding:8px;overflow:auto;display:flex;flex-direction:column;gap:4px}
+.drow{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.dl{color:var(--dim);font-size:10px}.dv{width:64px;text-align:right;font-family:"DejaVu Sans Mono",monospace;color:var(--accenthi)}
+.dnote{color:var(--dim);font-size:10px;margin-top:6px;border-top:1px solid var(--border);padding-top:4px}
+.srow{display:flex;gap:8px;align-items:center}.srow .dl{width:90px}
+.dlg select,.dlg input[type=text],.dlg input[type=number]{background:var(--bg);color:var(--text);border:1px solid var(--border);height:20px;padding:0 4px}
+.dlg input[type=range]{height:16px}.dlg input[type=range]::-webkit-slider-runnable-track{height:8px}.dlg input[type=range]::-webkit-slider-thumb{width:16px;height:16px;margin-top:-5px;box-shadow:inset 0 -3px 0 var(--accent)}
+.dlg .btn{padding:0 8px;height:20px;line-height:17px}
+.tapgrid{display:grid;grid-template-columns:repeat(8,40px);gap:0 4px;justify-content:start}
+.tapcv{border:1px solid var(--border)}
+.c5bands{display:flex;gap:6px}.c5col{border:1px solid var(--border);padding:4px;display:flex;flex-direction:column;gap:3px;background:var(--bg)}
+.strip:not(.bus){width:158px}
+.knobs.k3{grid-template-columns:repeat(3,40px);gap:0 1px}
+.ip{display:flex;justify-content:center}.ip canvas{cursor:crosshair}
+.iplab{display:flex;justify-content:space-between;align-items:center;color:var(--dim);font-size:9px;font-weight:bold;letter-spacing:1px;height:14px;padding:0 2px}
+.peqb{border:1px solid var(--border);padding:0 5px;cursor:pointer;color:var(--accenthi)}.peqb:hover{border-color:var(--accent)}
+
+.stackb{display:flex;flex-direction:column;gap:3px;justify-content:center;padding:10px 2px 0}.stackb .btn{height:20px;line-height:17px;font-size:9px;padding:0}
+.drow.mini select{width:62px;font-size:10px}.drow.mini{justify-content:center;gap:3px}
+.peqcv{border:1px solid var(--border)}.peqgrid{display:flex;gap:4px}.peqgrid .c5col{width:124px}
+.peqgrid .knobs{grid-template-columns:repeat(3,38px)}
+.strip{min-height:0}.strip>*{flex-shrink:0}.strip>.frow{flex:1 1 auto;flex-shrink:1}
+.modesel{width:100%;background:var(--bg);color:var(--text);border:1px solid var(--border);height:20px;font-size:10px}.peqbtn{margin:14px 4px;height:22px;line-height:19px;font-size:10px;padding:0}
+#main .cap{letter-spacing:1px;padding:3px 5px}#main .bar{gap:4px}
+.dtab{display:grid;grid-template-columns:1.2fr 2fr 1fr;border:1px solid var(--border)}.dtab .th{background:var(--accentdk);color:#fff;font-weight:bold;padding:2px 6px;font-size:10px}.dtab .td{padding:3px 6px;border-top:1px solid #1d1a28;font-size:10px}
+.dtab.vb .td{padding:2px 3px}.dtab input[type=text]{width:100%;min-width:0}
+.dtab .td select{max-width:100%}.leds{display:flex;gap:4px;align-items:center}.led{width:8px;height:8px;border-radius:50%;background:#2a2638;display:inline-block}.led.r{background:var(--red)}
+.macgrid{display:grid;grid-template-columns:repeat(10,1fr);gap:3px}.macb{height:34px;border:2px solid var(--accentdk);background:var(--bg);color:var(--text);display:flex;align-items:center;justify-content:center;font-size:9px;text-align:center;cursor:pointer;overflow:hidden;line-height:10px}.macb.empty{color:var(--dim)}.macb.on{background:var(--accent);color:#000}
+.maced{border-top:1px solid var(--border);margin-top:6px;display:flex;flex-direction:column;gap:4px}.maced textarea{background:var(--bg);color:var(--text);border:1px solid var(--border);font-family:"DejaVu Sans Mono",monospace;font-size:10px}
+.scngrid{display:grid;grid-template-columns:repeat(4,1fr);gap:3px}.scnb{height:26px;border:1px solid var(--border);padding:0 6px;display:flex;align-items:center;gap:6px;cursor:pointer;overflow:hidden;white-space:nowrap}.scnb .fk{color:var(--accenthi);font-weight:bold;width:24px}.scnb.empty{color:var(--dim)}.scnb.on{background:var(--accentdk);border-color:var(--accent)}
+
+:root[data-theme="potato"]{--bg:#2c3d4d;--panel:#354a59;--panel2:#3f505e;--border:#5d7385;--borderhi:#8aa3b5;--text:#e8eef3;--dim:#9db0be;--accent:#6ec592;--accenthi:#9be0b9;--accentdk:#32485d;--pink:#78a196;--unlit:#253845}
+[data-theme="potato"] .titlebar{background:linear-gradient(90deg,#1a2630,#2d4558 50%,#4d7899);border-bottom-color:var(--accent)}
+[data-theme="potato"] .logo{background:#1a2630;border-color:var(--accenthi)}
+[data-theme="potato"] .btn.on,[data-theme="potato"] .sname,[data-theme="potato"] .bname{color:#fff}
+[data-theme="potato"] .btn.on{color:#06231a}
+[data-theme="potato"] .btn.rB.on{background:#bff2dc;color:#06231a}
+[data-theme="potato"] input[type=range]::-webkit-slider-runnable-track{background:#223039}
+[data-theme="potato"] .sname,[data-theme="potato"] .bname{background:#4b6f86;border-color:var(--accenthi)}
+[data-theme="potato"] .cap{background:#2e4558}
+[data-theme="potato"] #main .sec,[data-theme="potato"] .mediasec{background:var(--bg)}
+.note{display:none}
+[data-theme="potato"] .titlebar{background:linear-gradient(90deg,#1f2d38,#36495a 60%,#4b6477)}
+.area[data-layout="potato"]{display:grid;grid-template-columns:300px 450px minmax(0,1.4fr) minmax(0,1fr);grid-template-rows:210px minmax(0,1fr);gap:4px;padding:4px}
+.area[data-layout="potato"] .main{display:contents}
+.area[data-layout="potato"] .vsplit,.area[data-layout="potato"] .hsplit{display:none}
+.area[data-layout="potato"] #sec_hw{grid-column:1;grid-row:1/3;flex:none!important;width:auto!important;min-width:0}
+.area[data-layout="potato"] #sec_vi{grid-column:2;grid-row:1/3;flex:none!important;width:auto!important;min-width:0}
+.area[data-layout="potato"] .mediasec{grid-column:3;grid-row:1;height:100%!important;margin:0;min-width:0}
+.area[data-layout="potato"] #sec_fx{grid-column:4;grid-row:1;width:auto!important;min-width:0;overflow:hidden}
+.area[data-layout="potato"] #sec_ha{grid-column:3;grid-row:2;width:auto!important;min-width:0}
+.area[data-layout="potato"] #sec_vb{grid-column:4;grid-row:2;width:auto!important;min-width:0}
+.area[data-layout="potato"] #sec_fx .fxbody{flex-direction:row;flex-wrap:wrap}
+.area[data-layout="potato"] .mhead .hint{display:none}
+.area[data-layout="potato"] #main .sec{border:1px solid var(--border);padding:2px}
+.area[data-layout="potato"] #main .cap{background:var(--accentdk);border-color:var(--border)}
+#edbar{display:none;position:absolute;right:10px;top:8px;z-index:90;background:var(--panel);border:2px solid var(--accent);padding:4px 6px;gap:6px;align-items:center;box-shadow:3px 3px 0 #000}
+.area.custom.edit #edbar{display:flex}
+#edbar .btn{padding:0 10px;height:22px;line-height:19px}#edbar .nm{color:var(--accenthi);font-weight:bold;margin-right:4px}
+.menu .sec{color:var(--accenthi);font-weight:bold;letter-spacing:1px;cursor:default;border-bottom:1px solid var(--accentdk);margin:3px 6px 1px;padding:3px 4px}
+.menu .sec:hover{background:none;color:var(--accenthi)}
+.sw{display:inline-block;width:12px;height:12px;border:1px solid #000;vertical-align:-2px;margin-right:6px}
+.swg{display:grid;grid-template-columns:repeat(2,1fr);gap:4px}.swc{display:flex;align-items:center;gap:6px;font-family:"DejaVu Sans Mono",monospace;font-size:10px}.swc i{width:34px;height:20px;border:1px solid #000;display:inline-block}
+
+.mrow .vol input::-webkit-slider-runnable-track,.rpop input[type=range]::-webkit-slider-runnable-track,.dlg input[type=range]::-webkit-slider-runnable-track{height:10px;background:linear-gradient(90deg,var(--accent) var(--p,0%),#0b0914 var(--p,0%));border:1px solid var(--borderhi)}
+.mrow .vol input::-webkit-slider-thumb,.rpop input[type=range]::-webkit-slider-thumb,.dlg input[type=range]::-webkit-slider-thumb{width:12px;height:22px;margin-top:-7px;background:var(--text);border:1px solid #000;box-shadow:none}
+.mrow .vol{width:340px}.mrow .vol input{height:22px}
+
+.note b{color:var(--accenthi)}
+.btn.net{font-size:10px;letter-spacing:1px}
+.strip .btn.net{flex:none;height:22px;min-height:22px;line-height:19px}
+.netdlg .hint{color:var(--dim);font-size:10px;line-height:13px}
+.netdlg .stat{font-family:"DejaVu Sans Mono",monospace;font-size:10px;color:var(--accenthi);min-height:13px}
+.netdlg .err{color:var(--red)}
+.netdlg input[type=text]{flex:1;min-width:150px}
+.netdlg input[type=number]{width:70px}
+.netdlg .off{opacity:.45;pointer-events:none}
+</style>
+</head>
+<body>
+<div id="fit">
+<div class="win" id="win">
+  <div class="titlebar">
+    <div class="logo"><b>VERTI</b><b class="m">MEETER</b> <i>'98</i> <small>v0.4.1 mockup 5</small></div>
+    <div class="engstat" id="engstat"></div>
+  </div>
+  <div class="menubar"><span>File</span><span>Engine</span><span>Record</span><span id="mTheme">Theme</span><span>Help</span></div>
+  <div class="area" id="area">
+  <div id="edbar"></div>
+  <div class="main" id="main"></div>
+  <div class="hsplit" id="hsplit" title="Drag to resize. Double-click to reset."></div>
+  <div class="mediasec" id="mediasec">
+    <div class="mhead">
+      <div class="cap">MEDIA PLAYER</div>
+      <div class="btn plus" id="addFiles" style="width:auto" title="Add audio or video files">+ FILES &#9662;</div>
+      <div class="btn sq" id="rmFile" title="Remove the selected file">-</div>
+      <div class="btn" id="clrFiles">CLEAR</div>
+      <div class="btn sq" id="mPrev" title="Previous">&#9198;</div>
+      <div class="btn sq" id="mPlayAll" title="Play / pause all">&#9654;</div>
+      <div class="btn sq" id="mStop" title="Stop all">&#9632;</div>
+      <div class="btn sq" id="mNext" title="Next">&#9197;</div>
+      <div class="hint">Any format (ffmpeg). Video files play audio only. Drop files here. Every file plays on its own and routes to any bus.</div>
+    </div>
+    <div class="mlist" id="mlist"></div>
+    <input type="file" id="fileIn" multiple accept="audio/*,video/*" hidden>
+  </div>
+  </div>
+  <div class="status" id="status">Mockup 4: Theme = Potato + Custom. Tools = VBAN, Macros, MIDI, Scenes, Streamer, Map. Right-click knobs/pads for detail. Drag dotted borders to resize.</div>
+</div>
+<div class="note"><b>Mockup of the planned VertiMeeter UI (v4).</b> Same sizes, colors and layout the PyQt app will use. Levels and hot-plugging are simulated.</div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+function el(tag,cls,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;}
+/* ---------- simulated live device lists ---------- */
+const BASE_IN=["fifine SC3 Analog Stereo","AB13X Headset Adapter Mono","AUSDOM FHD Camera Mono","USB Video Analog Stereo"];
+const BASE_OUT=["SIMGOT EW300 DSP Analog Stereo","fifine SC3 Analog Stereo","AB13X Headset Adapter Analog Stereo"];
+const plug={jabraIn:false,yeti:false,jabraOut:false,hdmi:true};
+const NET_OUT="Network (VBAN) -> <host:port>";
+const liveIn=()=>[...BASE_IN,...(plug.jabraIn?["Jabra Evolve 40 USB Analog Stereo"]:[]),...(plug.yeti?["Blue Yeti USB Analog Stereo"]:[])];
+const liveOut=()=>[...BASE_OUT,...(plug.jabraOut?["Jabra Evolve 40 USB Analog Stereo"]:[]),...(plug.hdmi?["HDMI / DisplayPort 1 Digital Stereo"]:[]),NET_OUT];
+const FX_LIST=["Noise suppression","De-esser","Reverb","Delay / echo","Limiter","Auto-duck","LV2 / LADSPA plugin..."];
+const APPS=["LibreWolf","Spotify","java","equibop","mpv"];
+const DEMO_FILES=[["song.flac","audio",222],["gameplay_clip.mp4","video",72],["voice_memo.m4a","audio",41],["intro.mkv","video",95],["ambience.ogg","audio",310],["stream_vod.webm","video",600]];
+let N={hw:0,virt:0,net:0,a:0,b:0};
+const strips=[],buses=[],files=[];
+const fresh=()=>({det:{cAuto:true,gBp:false,vOn:false,vPre:'Preset 1',dn:0,cIn:0,cRa:3,cTh:-18,cAt:10,cRe:100,cKn:6,cOut:0,gTh:-50,gDm:-80,gAt:1,gHo:100,gRe:150,dnf:-60,vMix:0,vPit:0,vFl:0,vFm:0,vFh:0,vFg:0},peq:newPeq(1),ipMode:0,ipx:0,ipy:0,pany:0,panMode:'Normal',mc:false,karaoke:'K off',rvb:0,dly:0,ex1:0,ex2:0,post:false,lim:12,limType:'yellow',gain:0,pan:0,bass:0,mid:0,treble:0,comp:0,gate:0,mute:false,solo:false,mono:false,routes:{},fx:[],amp:0.3,tgt:0.3});
+function addStrip(type,dev){
+  const s=fresh();s.type=type;N[type]++;const n=N[type];s.n=n;
+  if(type==="hw"){s.title="HARDWARE INPUT "+n;s.dev=dev||"";}
+  if(type==="virt"){s.title="VIRTUAL INPUT "+n;s.desc=n===1?"VertiMeeter Input (VAIO)":n===2?"VertiMeeter Aux Input (AUX)":"VertiMeeter Input "+n+" (VAIO"+n+")";s.apps=n===1?["LibreWolf","Spotify"]:n===2?["java"]:[];}
+  if(type==="net"){s.title="NETWORK INPUT "+n;s.stream="Stream"+n;s.port=6980+n-1;}
+  strips.push(s);return s;
+}
+function addBus(type,dev){
+  const b=fresh();b.rvbR=0;b.dlyR=0;b.lim=0;b.mode="Normal";b.peq=newPeq(8);b.selOn=false;b.mon=false;b.type=type;N[type]++;const n=N[type];b.n=n;b.id=type+n;b.label=type.toUpperCase()+n;b.eq=true;b.delay=0;
+  if(type==="a")b.dev=dev||"";
+  if(type==="a"){const fb=buses.findIndex(x=>x.type==="b");if(fb>=0)buses.splice(fb,0,b);else buses.push(b);}else buses.push(b);return b;
+}
+function addFile(name,kind,len){files.push({name,kind,len,pos:0,playing:false,loop:false,gain:0,routes:{a1:true}});}
+function seed(){
+  addStrip("hw",BASE_IN[0]);addStrip("hw","");addStrip("virt");addStrip("virt");addStrip("net");
+  addBus("a",BASE_OUT[0]);addBus("a","");addBus("b");addBus("b");
+  strips[0].routes={b1:true};strips[2].routes={a1:true};strips[3].routes={a1:true};strips[4].routes={a1:true};
+  strips[0].fx=[{n:"Noise suppression",on:true}];
+  addFile(...DEMO_FILES[0]);addFile(...DEMO_FILES[1]);addFile(...DEMO_FILES[2]);
+  files[0].playing=true;files[0].pos=.35;files[1].routes={a1:true,b1:true};files[1].gain=-6;
+}
+/* ---------- knob / fader / meter ---------- */
+function polar(cx,cy,r,deg){const a=deg*Math.PI/180;return[cx+r*Math.cos(a),cy-r*Math.sin(a)];}
+function arcPath(cx,cy,r,a0,a1){const [x0,y0]=polar(cx,cy,r,a0),[x1,y1]=polar(cx,cy,r,a1);const span=Math.abs(a1-a0);return `M${x0} ${y0} A${r} ${r} 0 ${span>180?1:0} ${a1<a0?1:0} ${x1} ${y1}`;}
+const TH={acc:'#a64dff',hi:'#c18bff',dk:'#7a35c0',b:'#ff5fa8'};
+function Knob(label,lo,hi,def,fmt,bip,obj,key,tip){
+  const w=el("div","knob");w.title=tip||label+": drag / wheel (Shift = fine). Double-click = reset";
+  function draw(){
+    const v=obj[key],f=(v-lo)/(hi-lo),cx=20,cy=26,r=12,a=225-f*270;
+    let val=`<path d="${arcPath(cx,cy,r,225,-45)}" stroke="#2a2638" stroke-width="3" fill="none"/>`;
+    if(bip){const f0=(def-lo)/(hi-lo),a0=225-f0*270;if(Math.abs(a-a0)>.3)val+=`<path d="${arcPath(cx,cy,r,a0,a)}" stroke="${TH.acc}" stroke-width="3" fill="none"/>`;}
+    else if(f>0.001)val+=`<path d="${arcPath(cx,cy,r,225,a)}" stroke="${TH.acc}" stroke-width="3" fill="none"/>`;
+    const [px,py]=polar(cx,cy,2,a),[qx,qy]=polar(cx,cy,r-3,a);
+    w.innerHTML=`<svg width="40" height="54" viewBox="0 0 40 54"><text x="20" y="8" text-anchor="middle" font-size="7" font-weight="bold" fill="#7d7794">${label}</text>${val}
+      <circle cx="${cx}" cy="${cy}" r="${r-4}" fill="#1d1a28" stroke="#8a82a8"/><line x1="${px}" y1="${py}" x2="${qx}" y2="${qy}" stroke="#fff" stroke-width="2"/>
+      <text x="20" y="50" text-anchor="middle" font-size="7" font-family="DejaVu Sans Mono,monospace" fill="${TH.hi}">${fmt(v)}</text></svg>`;
+  }
+  function set(v){v=Math.max(lo,Math.min(hi,v));if(Math.abs(v-def)<(hi-lo)*.012)v=def;obj[key]=v;draw();}
+  let dy=null,dv=0;
+  w.addEventListener("pointerdown",e=>{dy=e.clientY;dv=obj[key];w.setPointerCapture(e.pointerId);});
+  w.addEventListener("pointermove",e=>{if(dy!=null){const sc=window.__scale||1;set(dv+((dy-e.clientY)/sc)/120*(hi-lo)*(e.shiftKey?.2:1));}});
+  w.addEventListener("pointerup",()=>dy=null);
+  w.addEventListener("dblclick",()=>set(def));
+  w.addEventListener("wheel",e=>{e.preventDefault();const st=(hi-lo)/60*(e.shiftKey?.2:1);set(obj[key]+(e.deltaY<0?st:-st));},{passive:false});
+  draw();return w;
+}
+const FDB=[-60,-40,-20,-10,0,6,12],FP=[0,.12,.38,.55,.78,.9,1];
+function interp(x,xs,ys){for(let i=1;i<xs.length;i++)if(x<=xs[i])return ys[i-1]+(ys[i]-ys[i-1])*(x-xs[i-1])/(xs[i]-xs[i-1]);return ys[ys.length-1];}
+const FW=44;
+function Fader(obj,readout){
+  const w=el("div","fader");const c=el("canvas");w.appendChild(c);w.title="Fader gain: drag / wheel (Shift = fine). Double-click = 0 dB";
+  let H=150;
+  const y=db=>9+(1-interp(db,FDB,FP))*(H-18);
+  function draw(){
+    const g=c.getContext("2d");g.clearRect(0,0,FW,H);
+    FDB.forEach(db=>{const yy=Math.round(y(db)),z=db===0,l=z?7:4;g.fillStyle=z?TH.acc:"#7d7794";g.fillRect(0,yy,l,1);g.fillRect(FW-l,yy,l,1);});
+    g.fillStyle="#050508";g.strokeStyle="#4a4560";g.fillRect(19,9,6,H-18);g.strokeRect(19.5,9.5,5,H-19);
+    const yy=y(obj.gain);g.fillStyle="#1a1726";g.fillRect(5,yy-8,34,16);g.strokeStyle="#8a82a8";g.strokeRect(5.5,yy-7.5,33,15);
+    g.fillStyle=TH.acc;g.fillRect(9,yy-1,26,2);g.fillStyle="#000";g.fillRect(6,yy+7,33,1);
+    readout.textContent=obj.gain<=-59.9?"-inf":(obj.gain>=0?"+":"")+obj.gain.toFixed(1)+" dB";
+  }
+  function fromY(py){let p=1-(py-9)/(H-18);p=Math.max(0,Math.min(1,p));let db=interp(p,FP,FDB);if(Math.abs(db)<.4)db=0;obj.gain=Math.max(-60,Math.min(12,db));draw();}
+  const sc=()=>window.__scale||1,top=()=>w.getBoundingClientRect().top;
+  let down=false;
+  w.addEventListener("pointerdown",e=>{down=true;w.setPointerCapture(e.pointerId);fromY((e.clientY-top())/sc());});
+  w.addEventListener("pointermove",e=>{if(down)fromY((e.clientY-top())/sc());});
+  w.addEventListener("pointerup",()=>down=false);
+  w.addEventListener("dblclick",()=>{obj.gain=0;draw();});
+  w.addEventListener("wheel",e=>{e.preventDefault();obj.gain=Math.max(-60,Math.min(12,obj.gain+(e.deltaY<0?.5:-.5)*(e.shiftKey?.2:1)));draw();},{passive:false});
+  new ResizeObserver(()=>{H=Math.max(60,Math.round(w.clientHeight));c.width=FW;c.height=H;draw();}).observe(w);
+  return w;
+}
+const meters=[],MW=22;
+function Meter(getLevel){
+  const w=el("div","meter");const c=el("canvas");w.appendChild(c);
+  const m={w,c,get:getLevel,disp:[-90,-90],hold:[-90,-90],ht:[0,0],clip:false,H:150};
+  w.title="Peak meter (click to clear clip LED)";w.addEventListener("click",()=>m.clip=false);
+  new ResizeObserver(()=>{m.H=Math.max(60,Math.round(w.clientHeight));c.width=MW;c.height=m.H;}).observe(w);
+  meters.push(m);return w;
+}
+function drawMeter(m,now){
+  const [l,r]=m.get();const g=m.c.getContext("2d"),W=MW,H=m.H;
+  g.fillStyle="#050508";g.fillRect(0,0,W,H);g.strokeStyle="#4a4560";g.strokeRect(.5,.5,W-1,H-1);
+  g.fillStyle=m.clip?"#e0304f":"#2a1018";g.fillRect(2,2,W-4,5);
+  const top=9,seg=3,gap=1,n=Math.max(1,Math.floor((H-top-2)/(seg+gap))),bw=Math.floor((W-5)/2);
+  [l,r].forEach((v,ch)=>{
+    const db=v>1e-6?20*Math.log10(v):-90;m.disp[ch]=Math.max(db,m.disp[ch]-2.2);
+    if(db>=m.hold[ch]){m.hold[ch]=db;m.ht[ch]=now;}else if(now-m.ht[ch]>1500)m.hold[ch]=Math.max(db,m.hold[ch]-1);
+    if(v>=.999)m.clip=true;
+    for(let k=0;k<n;k++){
+      const d=-60+(k+1)/n*60,yy=H-2-(k+1)*(seg+gap)+gap,lit=m.disp[ch]>=d-60/n*.5,held=!lit&&Math.abs(m.hold[ch]-d)<60/n*.6;
+      g.fillStyle=lit?(d>-2?"#e0304f":d>-9?TH.b:d>-24?TH.hi:TH.dk):held?"#eadcff":"#1a1626";
+      g.fillRect(2+ch*(bw+1),yy,bw,seg);
+    }
+  });
+}
+/* ---------- menus (live: itemsFn re-evaluated every second while open) ---------- */
+let openMenu=null,openFn=null,openAnchor=null,pendingBuild=false,popFile=null,popSig='';
+function closeMenu(){if(openMenu){openMenu.remove();openMenu=null;openFn=null;openAnchor=null;popFile=null;}if(pendingBuild){pendingBuild=false;build();}}
+function renderMenu(){
+  const items=openFn();const m=el("div","menu");
+  items.forEach(it=>{
+    if(it==="-"){m.appendChild(el("hr"));return;}
+    const d=el("div",(it.sec?"sec ":"")+(it.title?"t ":"")+(it.live?"live ":"")+(it.check?"ck":""),it.label);
+    if(!it.title&&!it.live&&!it.sec)d.addEventListener("click",e=>{e.stopPropagation();closeMenu();it.fn&&it.fn();});
+    m.appendChild(d);
+  });
+  const win=$("#win"),wr=win.getBoundingClientRect(),ar=openAnchor.getBoundingClientRect(),sc=window.__scale||1;
+  if(openMenu)openMenu.remove();
+  win.appendChild(m);openMenu=m;
+  let x=(ar.left-wr.left)/sc,y=(ar.bottom-wr.top)/sc;
+  if(x+m.offsetWidth>win.clientWidth-6)x=win.clientWidth-6-m.offsetWidth;
+  if(y+m.offsetHeight>win.clientHeight-6)y=Math.max(2,(ar.top-wr.top)/sc-m.offsetHeight);
+  m.style.left=x+"px";m.style.top=y+"px";
+}
+function showMenu(anchor,itemsOrFn){closeMenu();openAnchor=anchor;openFn=typeof itemsOrFn==="function"?itemsOrFn:()=>itemsOrFn;renderMenu();}
+document.addEventListener("click",closeMenu);
+setInterval(()=>{if(openMenu&&openFn)renderMenu();},1000);
+const stamp=()=>new Date().toTimeString().slice(0,8);
+/* simulated hot-plugging */
+function hotplug(key){plug[key]=!plug[key];if(openMenu){if(openFn)renderMenu();pendingBuild=true;}else build();}
+setInterval(()=>hotplug("jabraIn"),4500);setInterval(()=>hotplug("yeti"),8000);setInterval(()=>hotplug("jabraOut"),6000);
+/* ---------- build ---------- */
+let selStrip=null,selBus=null,selFile=null;
+const routeIds=()=>buses.map(b=>b.id);
+function knobGrid(o,keys){
+  const g=el("div","knobs");const f=v=>(v>=0?"+":"")+v.toFixed(1);const spec={
+    bass:["BASS",-12,12,0,f,true],mid:["MID",-12,12,0,f,true],treble:["TREB",-12,12,0,f,true],
+    pan:["PAN",-1,1,0,v=>(v>=0?"+":"")+v.toFixed(2),true],comp:["COMP",0,10,0,v=>v.toFixed(1),false],gate:["GATE",0,10,0,v=>v.toFixed(1),false],delay:["DELAY",0,500,0,v=>v.toFixed(0)+"ms",false]};
+  keys.forEach(k=>{const p=spec[k];g.appendChild(Knob(p[0],p[1],p[2],p[3],p[4],p[5],o,k));});return g;
+}
+function devItems(list,cur,onPick,usedBy,noun){
+  return ()=>{const L=list();return[{live:true,label:`<span class="dot">●</span> LIVE &nbsp;${L.length} ${noun} found &nbsp;<span style="color:var(--dim)">scanned ${stamp()}</span>`},{label:"(none)",fn:()=>onPick("")},"-",
+    ...L.map(d=>({label:d,check:d===cur(),fn:()=>onPick(d)}))];};
+}
+function stripEl(s){
+  const e=el("div","strip"+(selStrip===s?" sel":""));
+  const nm=el("div","sname",s.title);nm.title="Click to select (then [ - ] removes it). Double-click to rename.";
+  nm.addEventListener("click",ev=>{ev.stopPropagation();selStrip=selStrip===s?null:s;build();});
+  nm.addEventListener("contextmenu",ev=>{ev.preventDefault();ev.stopPropagation();showMenu(nm,()=>[{label:"Strip: "+s.title,title:true},{label:"Rename...",fn:()=>{const t=prompt("Rename strip",s.title);if(t){s.title=t.toUpperCase().slice(0,24);build();}}},"-",{label:"Reset all effects"},{label:"Reset EQ"},{label:"Reset Intellipan"},{label:"Reset comp / gate / denoiser"},"-",{label:"Copy strip settings"},{label:"Paste strip settings"},{label:"Load strip settings (XML)..."},{label:"Save strip settings (XML)..."}]);});
+  nm.addEventListener("dblclick",()=>{const t=prompt("Rename strip",s.title);if(t){s.title=t.toUpperCase().slice(0,24);build();}});
+  e.appendChild(nm);
+  let dev;
+  if(s.type==="hw"){
+    dev=el("div","dev");dev.style.height="40px";
+    const live=liveIn();
+    dev.innerHTML=!s.dev?`<span><span class="no">NO DEVICE</span><br><small>click to pick input</small></span>`:live.includes(s.dev)?s.dev:`<span><span class="miss">MISSING</span><br><small>${s.dev.slice(0,22)}</small></span>`;
+    dev.title=s.dev||"No input device selected. Click to choose (list reads live).";
+    dev.addEventListener("click",ev=>{ev.stopPropagation();showMenu(dev,devItems(liveIn,()=>s.dev,d=>{s.dev=d;build();},null,"inputs"));});
+  }else if(s.type==="virt"){dev=el("div","dev info",s.desc);dev.style.height="40px";dev.title="In your apps / system sound settings pick the output device:\n'"+s.desc+"'";}
+  else{dev=el("div","dev info","<span>Network input<br>(VBAN)</span>");dev.style.height="40px";}
+  e.appendChild(dev);
+  stripCtl(e,s);
+  if(s.type==="hw"){const st=el("div","hwstat");s.statEl=st;e.appendChild(st);}
+  else if(s.type==="virt"){
+    const a=el("div","apps slot");
+    s.apps.slice(0,3).forEach(n=>{const b=el("div","app","♪ "+n);b.title=n+" (click to move to another input/output)";
+      b.addEventListener("click",ev=>{ev.stopPropagation();showMenu(b,()=>[{label:"Move '"+n+"' to:",title:true},...strips.filter(x=>x.type==="virt").map(x=>({label:x.desc,fn:()=>{s.apps=s.apps.filter(z=>z!==n);x.apps.push(n);build();}})),"-",...liveOut().slice(0,3).map(d=>({label:d,fn:()=>{s.apps=s.apps.filter(z=>z!==n);build();}}))]);});a.appendChild(b);});
+    const ad=el("div","add","+ APP");ad.title="Pull a playing app into this input";
+    ad.addEventListener("click",ev=>{ev.stopPropagation();showMenu(ad,()=>{const o=APPS.filter(n=>!s.apps.includes(n));return o.length?o.map(n=>({label:n+"   (on default)",fn:()=>{s.apps.push(n);build();}})):[{label:"No other apps are playing right now",title:true}];});});
+    a.appendChild(ad);e.appendChild(a);
+  }else{
+    const n=el("div","net",`<b>${s.stream}</b><span>UDP port ${s.port}</span><span><span class="led">●</span> receiving</span><span style="color:var(--dim)">48000 Hz / 2 ch</span>`);
+    n.title="VBAN input. Click to edit stream name / port.";
+    n.addEventListener("click",()=>{const t=prompt("VBAN stream name",s.stream);if(t){s.stream=t;build();}});e.appendChild(n);
+  }
+  const ro=el("div","readout");const fr=el("div","frow");fr.appendChild(Fader(s,ro));fr.appendChild(Meter(()=>sLevel(s)));
+  const rv=el("div","routes");
+  routeIds().forEach(id=>{const isB=id[0]==="b",bb=buses.find(b=>b.id===id);
+    const rb=el("div","btn rt"+(isB?" rB":"")+(s.routes[id]?" on":""),id.toUpperCase());
+    rb.title="Send this strip to "+id.toUpperCase()+"\n-> "+(isB?"VertiMeeter Out "+id.toUpperCase():(bb.dev||"NO DEVICE"));
+    rb.style.gridColumn=isB?2:1;rb.style.gridRow=+id.slice(1);
+    rb.addEventListener("click",()=>{s.routes[id]=!s.routes[id];rb.classList.toggle("on");});rv.appendChild(rb);});
+  fr.appendChild(rv);e.appendChild(fr);e.appendChild(ro);
+  [["MONO","mono"],["SOLO","solo"],["MUTE","mute"]].forEach(([t,k])=>{const b=el("div","btn "+k+(s[k]?" on":""),t);b.addEventListener("click",()=>{s[k]=!s[k];b.classList.toggle("on");});e.appendChild(b);});
+  return e;
+}
+function fxRow(o,title){
+  const fx=el("div","fxrow");const fb=el("div","btn"+(o.fx.some(f=>f.on)?" on":""),"FX"+(o.fx.length?" "+o.fx.filter(f=>f.on).length+"/"+o.fx.length:""));
+  fb.title="Insert effects / plugins";
+  fb.addEventListener("click",ev=>{ev.stopPropagation();showMenu(fb,()=>[{label:title,title:true},...o.fx.map(f=>({label:f.n+(f.on?"  [on]":"  [off]"),check:f.on,fn:()=>{f.on=!f.on;build();}})),
+    o.fx.length?"-":null,o.fx.length?{label:"Remove all",fn:()=>{o.fx=[];build();}}:null,"-",{label:"Add:",title:true},...FX_LIST.map(n=>({label:"+ "+n,fn:()=>{o.fx.push({n,on:true});build();}}))].filter(Boolean));});
+  fx.appendChild(fb);return fx;
+}
+function busEl(b){
+  const e=el("div","strip bus"+(selBus===b?" sel":""));
+  const nm=el("div","bname",b.label);nm.title="Click to select (then [ - ] removes it)";
+  nm.addEventListener("click",ev=>{ev.stopPropagation();selBus=selBus===b?null:b;build();});e.appendChild(nm);
+  let dev;
+  if(b.type==="a"){
+    dev=el("div","dev");dev.style.height="52px";const live=liveOut();
+    dev.innerHTML=!b.dev?`<span><span class="no">NO DEVICE</span><br><small>click to pick output</small></span>`:live.includes(b.dev)?b.dev:`<span><span class="miss">MISSING</span><br><small>${b.dev.slice(0,22)}</small></span>`;
+    dev.title=b.dev||"No output device selected. Click to choose (list reads live).";
+    dev.addEventListener("click",ev=>{ev.stopPropagation();showMenu(dev,devItems(liveOut,()=>b.dev,d=>{b.dev=d;build();},null,"outputs"));});
+  }else{dev=el("div","dev info","<span>Virtual mic:<br><b>VertiMeeter<br>Out "+b.label+"</b></span>");dev.style.height="52px";dev.title="Pick 'VertiMeeter Out "+b.label+"' as the microphone in Discord / VRChat / OBS";}
+  e.appendChild(dev);e.appendChild(knobGrid(b,["bass","mid","treble","delay"]));
+  const rv=el("div","knobs");rv.append(kn(b,"rvbR","R.RET",0,10,0),kn(b,"dlyR","D.RET",0,10,0),kn(b,"lim","LIMIT",-20,0,0,FDBF),act("PEQ",()=>openPEQ("peq"+b.id,"Master parametric EQ: "+b.label,b.peq,8),"peqbtn"));e.appendChild(rv);
+  const md=sel(BUS_MODES,b,"mode");md.className="modesel";md.title="Bus mode";md.addEventListener("click",ev=>ev.stopPropagation());e.appendChild(md);
+  const sr=el("div","fxrow");const sb=el("div","btn"+(b.selOn?" on":""),"SEL");sb.title="Edit this bus's sub-mix on the input faders (Ctrl+click = several)";sb.addEventListener("click",()=>{b.selOn=!b.selOn;sb.classList.toggle("on",b.selOn);});
+  const mb=el("div","btn"+(b.mon?" on":""),"MON");mb.title="Monitor this bus on the output chosen in System Settings";mb.addEventListener("click",()=>{b.mon=!b.mon;mb.classList.toggle("on",b.mon);});sr.append(sb,mb);e.appendChild(sr);
+  e.appendChild(fxRow(b,"Bus insert effects"));
+  if(b.type==="b")e.appendChild(netBtn(b));
+  const ro=el("div","readout");const fr=el("div","frow");fr.appendChild(Fader(b,ro));fr.appendChild(Meter(()=>bLevel(b)));e.appendChild(fr);e.appendChild(ro);
+  [["EQ","eq",""],["MONO","mono","mono"],["MUTE","mute","mute"]].forEach(([t,k,c])=>{const x=el("div","btn "+c+(b[k]?" on":""),t);if(k==="eq"){x.title="Master EQ on / off. Right-click = open the 6-cell parametric EQ";x.addEventListener("contextmenu",ev=>{ev.preventDefault();openPEQ("peq"+b.id,"Master parametric EQ: "+b.label,b.peq,8);});}x.addEventListener("click",()=>{b[k]=!b[k];x.classList.toggle("on");});e.appendChild(x);});
+  return e;
+}
+
+/* ---------- network out (virtual outs B1-B3): IP to IP, one target host per bus ---------- */
+const NET_CODECS={VBAN:["PCM"],OBAN:["PCM","Opus music","Opus voice","VFLAC lossless","mu-law"]};
+const NET_FMTS=["8-bit","16-bit","24-bit","32-bit","float 32","float 64"];
+function netState(b){return b.net=b.net||{on:false,proto:"OBAN",addr:"",port:6990,stream:"",codec:"Opus music",sr:"48000 Hz",ch:"Stereo",fmt:"float 32",kbps:128,ms:"20 ms",err:""};}
+function netKbps(n){const sr=parseInt(n.sr),ch=n.ch==="Mono"?1:2,bits={"8-bit":8,"16-bit":16,"24-bit":24,"32-bit":32,"float 32":32,"float 64":64}[n.fmt];
+  if(n.codec==="PCM")return Math.round(sr*ch*bits/1000);if(n.codec.startsWith("Opus"))return n.kbps;
+  if(n.codec==="VFLAC lossless")return Math.round(sr*ch*(n.fmt==="24-bit"?24:16)*0.6/1000);return Math.round(sr*ch*8/1000);}
+function netTip(b){const n=netState(b);return n.on?"Sending to "+n.addr+":"+n.port+" ("+n.proto+", "+n.codec+", about "+netKbps(n)+" kbps). Click to edit":"Network out (OBAN / VBAN) is off. Click to set the target host";}
+function netBtn(b){const n=netState(b),x=el("div","btn net"+(n.on?" on":""),"NET");x.title=netTip(b);x.addEventListener("click",()=>netDialog(b,x));return x;}
+function netDialog(bus,btn){const n=netState(bus);
+  dialog("net"+bus.id,"Network out (OBAN / VBAN) - "+bus.label,430,(body,close)=>{
+    body.classList.add("netdlg");
+    const row=(lab,c)=>{const r=el("div","srow");r.append(el("span","dl",lab),c);return r;};
+    const txt=(k,ph,max)=>{const i=el("input");i.type="text";i.placeholder=ph;i.value=n[k];if(max)i.maxLength=max;i.addEventListener("input",()=>{n[k]=i.value;});return i;};
+    const hint=el("div","hint"),stat=el("div","stat");
+    const proto=sel(["VBAN","OBAN"],n,"proto",()=>{
+      const list=NET_CODECS[n.proto];codec.innerHTML="";list.forEach(x=>codec.appendChild(el("option",null,esc(x))));
+      if(!list.includes(n.codec))n.codec=list[0];codec.value=n.codec;
+      if(n.port===6980||n.port===6990){n.port=n.proto==="VBAN"?6980:6990;port.value=n.port;}
+      sync();});
+    const host=txt("addr","host or IP address of the receiver");
+    const port=el("input");port.type="number";port.min=1;port.max=65535;port.value=n.port;port.addEventListener("input",()=>{n.port=+port.value;});
+    const stream=txt("stream","stream name (max 16 chars)",16);
+    const codec=sel(NET_CODECS[n.proto],n,"codec",()=>{if(n.codec==="mu-law"){n.sr="8000 Hz";sr.value=n.sr;n.ch="Mono";ch.value=n.ch;}sync();});
+    const sr=sel(["8000 Hz","11025 Hz","16000 Hz","22050 Hz","32000 Hz","44100 Hz","48000 Hz","88200 Hz","96000 Hz","192000 Hz"],n,"sr",sync);
+    const ch=sel(["Stereo","Mono"],n,"ch",sync);
+    const fmt=sel(NET_FMTS,n,"fmt",sync);
+    const kb=el("input");kb.type="number";kb.min=6;kb.max=510;kb.value=n.kbps;kb.addEventListener("input",()=>{n.kbps=+kb.value;sync();});
+    const ms=sel(["5 ms","10 ms","20 ms","40 ms"],n,"ms");
+    const rows={sr:row("Sample rate",sr),fmt:row("PCM format",fmt),kb:row("Opus bitrate",kb),ms:row("Opus frame",ms)};
+    function sync(){const c=n.codec,pcm=c==="PCM",opus=c.startsWith("Opus");
+      rows.sr.classList.toggle("off",opus);rows.fmt.classList.toggle("off",!(pcm||c==="VFLAC lossless"));rows.kb.classList.toggle("off",!opus);rows.ms.classList.toggle("off",!opus);
+      if(opus){n.sr="48000 Hz";sr.value=n.sr;}
+      if(c==="VFLAC lossless"&&!["16-bit","24-bit"].includes(n.fmt)){n.fmt="16-bit";fmt.value=n.fmt;}
+      const k=netKbps(n);hint.textContent="about "+k+" kbps. "+(pcm&&n.proto==="VBAN"?"PCM, works with Voicemeeter / VBAN receivers.":opus?"OBAN receivers only."+(c==="Opus voice"?" Voice mode adds loss protection.":""):c==="VFLAC lossless"?"OBAN receivers only. Bit-exact audio, roughly 40% smaller than PCM (about).":c==="mu-law"?"OBAN receivers only. 8-bit companded voice, very small.":"PCM, OBAN receivers.");
+      paint();}
+    const send=el("div","btn"+(n.on?" on":""),"SEND");
+    function paint(){send.classList.toggle("on",n.on);btn.classList.toggle("on",n.on);btn.title=netTip(bus);
+      stat.classList.toggle("err",!!n.err);stat.textContent=n.err||(n.on?"sending '"+(n.stream||"Stream1")+"' to "+n.addr+":"+n.port+" | "+netKbps(n)+" kbps":"");}
+    send.addEventListener("click",()=>{
+      if(!n.on){const a=n.addr.trim();if(!a||!(n.port>0&&n.port<65536)){n.err="address and port required";paint();return;}n.addr=a;n.err="";n.on=true;}else{n.on=false;n.err="";}
+      paint();});
+    const ok=el("div","btn","OK");ok.addEventListener("click",close);
+    body.append(row("Protocol",proto),row("Host",host),row("Port",port),row("Stream",stream),row("Codec",codec),
+      rows.sr,row("Channels",ch),rows.fmt,rows.kb,rows.ms,hint,
+      el("div","hint","IP to IP: this bus is sent only to the host above, and only while SEND is on. On the receiving VertiMeeter, set its strip's sender IP to this PC's address. No encryption or login: use a private network or Tailscale."),
+      stat,send,ok);
+    sync();
+  });}
+/* ---------- media player section ---------- */
+const fmt=t=>Math.floor(t/60)+":"+String(Math.floor(t%60)).padStart(2,"0");
+function buildMedia(){
+  const L=$("#mlist");L.innerHTML="";
+  if(!files.length){L.appendChild(el("div","mempty","No files loaded. Click [ + FILES v ] or drop audio / video files here."));return;}
+  files.forEach(f=>{
+    const r=el("div","mrow"+(selFile===f?" sel":""));
+    const pl=el("div","btn pl"+(f.playing?" on":""),f.playing?"⏸":"▶");pl.title="Play / pause";
+    pl.addEventListener("click",e=>{e.stopPropagation();f.playing=!f.playing;buildMedia();});
+    const nm=el("div","nm",f.name+(f.kind==="video"?'<span class="tag">VIDEO → AUDIO</span>':""));nm.title=f.name;
+    nm.addEventListener("click",()=>{selFile=selFile===f?null:f;buildMedia();});
+    const sk=el("div","seek","<i></i>");sk.addEventListener("click",e=>{const rc=sk.getBoundingClientRect();f.pos=(e.clientX-rc.left)/rc.width;});f.seekEl=sk.firstChild;
+    const tm=el("div","tm");f.tmEl=tm;
+    const lp=el("div","btn lp"+(f.loop?" on":""),"↻");lp.title="Loop";lp.addEventListener("click",()=>{f.loop=!f.loop;lp.classList.toggle("on");});
+    const vol=el("div","vol");const sl=el("input");sl.type="range";sl.min=-60;sl.max=12;sl.step=.5;sl.value=f.gain;const rd=el("span");
+    const upd=()=>rd.textContent=f.gain<=-59.5?"-inf":(f.gain>=0?"+":"")+f.gain.toFixed(1)+" dB";upd();
+    sl.addEventListener("input",()=>{f.gain=+sl.value;upd();});sl.addEventListener("dblclick",()=>{f.gain=0;sl.value=0;upd();});
+    vol.append(sl,rd);
+    const rt=el("div","btn rt2");f.rtEl=rt;updateRouteBtn(f);
+    rt.addEventListener("mouseenter",e=>showTip(f,e));rt.addEventListener("mousemove",moveTip);rt.addEventListener("mouseleave",hideTip);
+    rt.addEventListener("click",e=>{e.stopPropagation();hideTip();showRoutePop(rt,f);});
+    const rm=el("div","btn rm","×");rm.title="Remove this file";rm.addEventListener("click",()=>{files.splice(files.indexOf(f),1);buildMedia();});
+    r.append(pl,nm,sk,tm,lp,vol,rt,rm);L.appendChild(r);
+  });
+}
+function addFilesFromNames(arr){arr.forEach(([n,k,l])=>addFile(n,k,l));buildMedia();$("#mlist").scrollTop=1e6;}
+const VID=/\.(mp4|mkv|webm|avi|mov|flv|wmv|m4v|ts)$/i;
+function fromFileList(fl){addFilesFromNames([...fl].map(f=>[f.name,VID.test(f.name)||f.type.startsWith("video")?"video":"audio",60+Math.floor(Math.random()*240)]));}
+$("#addFiles").addEventListener("click",e=>{e.stopPropagation();showMenu($("#addFiles"),()=>[{label:"Add to media player:",title:true},{label:"Choose files...  (file dialog, any audio / video)",fn:()=>$("#fileIn").click()},{label:"Add folder...",fn:()=>addFilesFromNames(DEMO_FILES.slice(3))},"-",{label:"Recent:",title:true},...DEMO_FILES.map(f=>({label:f[0]+(f[1]==="video"?"   (video, audio only)":""),fn:()=>addFilesFromNames([f])}))]);});
+$("#fileIn").addEventListener("change",e=>{fromFileList(e.target.files);e.target.value="";});
+$("#rmFile").addEventListener("click",()=>{if(!files.length)return;const f=selFile||files[files.length-1];files.splice(files.indexOf(f),1);selFile=null;buildMedia();});
+$("#clrFiles").addEventListener("click",()=>{files.length=0;selFile=null;buildMedia();});
+$("#mPlayAll").addEventListener("click",()=>{const any=files.some(f=>f.playing);files.forEach(f=>f.playing=!any);buildMedia();});
+$("#mStop").addEventListener("click",()=>{files.forEach(f=>{f.playing=false;f.pos=0;});buildMedia();});
+$("#mPrev").addEventListener("click",()=>files.forEach(f=>f.pos=0));
+$("#mNext").addEventListener("click",()=>files.forEach(f=>f.pos=Math.min(1,f.pos+.1)));
+const ms=$("#mediasec");
+["dragenter","dragover"].forEach(ev=>ms.addEventListener(ev,e=>{e.preventDefault();ms.classList.add("drag");}));
+["dragleave","drop"].forEach(ev=>ms.addEventListener(ev,e=>{e.preventDefault();ms.classList.remove("drag");}));
+ms.addEventListener("drop",e=>fromFileList(e.dataTransfer.files));
+/* ---------- fake signal ---------- */
+const anySolo=()=>strips.some(s=>s.solo);
+function sLevel(s){
+  if(s.type==="hw"&&(!s.dev||!liveIn().includes(s.dev)))return[0,0];
+  if(s.type==="virt"&&!s.apps.length)return[0,0];
+  const muted=s.mute||(anySolo()&&!s.solo),a=s.amp*(muted?0:Math.pow(10,s.gain/20));
+  return[Math.min(1,a*(s.pan>0?1-s.pan:1))*(.85+Math.random()*.15),Math.min(1,a*(s.pan<0?1+s.pan:1))*(.85+Math.random()*.15)];
+}
+function bLevel(b){
+  let l=0,r=0;strips.forEach(s=>{if(s.routes[b.id]){const v=sLevel(s);l+=v[0];r+=v[1];}});
+  files.forEach(f=>{if(f.playing&&f.routes[b.id]){const a=.3*Math.pow(10,(f.gain+((f.send&&f.send[b.id])||0))/20);l+=a;r+=a;}});
+  const g=b.mute?0:Math.pow(10,b.gain/20);l=Math.min(1,l*g);r=Math.min(1,r*g);return b.mono?[(l+r)/2,(l+r)/2]:[l,r];
+}
+function updateStats(){
+  strips.forEach(s=>{if(!s.statEl||!s.statEl.isConnected)return;
+    if(!s.dev){s.statEl.innerHTML=`<span style="color:var(--red)"><b>NO DEVICE</b></span><span style="color:var(--dim)">pick one above</span>`;return;}
+    if(!liveIn().includes(s.dev)){s.statEl.innerHTML=`<span style="color:var(--amber)"><b>MISSING</b></span><span style="color:var(--dim)">will re-link when<br>it comes back</span>`;return;}
+    const m=meters.find(m=>m.w.closest(".strip")===s.statEl.closest(".strip"));const pk=m?Math.max(...m.disp):-90,live=pk>-50;
+    s.statEl.innerHTML=`<span><span style="color:${live?"var(--accent)":"var(--dim)"}">${live?"●":"○"}</span> ${live?"SIGNAL":"silent"}</span><span class="v">${pk<=-89?"-inf":(pk>=0?"+":"")+pk.toFixed(1)}</span><span style="color:var(--dim)">dB peak</span>`;});
+}
+let tick=0;
+function loop(now){
+  strips.forEach(s=>{s.tgt=Math.max(.04,Math.min(.8,s.tgt+(Math.random()-.5)*.12));s.amp+=(s.tgt-s.amp)*.25;});
+  files.forEach(f=>{if(f.playing){f.pos+=1/(f.len*60);if(f.pos>=1){if(f.loop)f.pos=0;else{f.pos=1;f.playing=false;buildMedia();}}}
+    if(f.seekEl)f.seekEl.style.width=(f.pos*100)+"%";if(f.tmEl)f.tmEl.textContent=fmt(f.pos*f.len)+" / "+fmt(f.len);});
+  meters.forEach(m=>drawMeter(m,now));
+  if(++tick%8===0)updateStats();
+  requestAnimationFrame(loop);
+}
+/* ---------- sliders / add / remove ---------- */
+const SECS=[
+ {k:"hw",title:"HARDWARE INPUTS",items:()=>strips.filter(s=>s.type==="hw"),mk:s=>stripEl(s)},
+ {k:"vi",title:"VIRTUAL INPUTS",items:()=>strips.filter(s=>s.type!=="hw"),mk:s=>stripEl(s)},
+ {k:"fx",title:"SPECIAL FX",fx:true},
+ {k:"ha",title:"HARDWARE OUT",items:()=>buses.filter(b=>b.type==="a"),mk:b=>busEl(b)},
+ {k:"vb",title:"VIRTUAL OUT",items:()=>buses.filter(b=>b.type==="b"),mk:b=>busEl(b)}];
+const mainEl=$("#main");
+SECS.forEach((sc,i)=>{
+  if(i){const sp=el("div","vsplit");sp.dataset.k=SECS[i-1].k;sp.title="Drag to resize the pane on the left. Double-click to reset.";mainEl.appendChild(sp);}
+  const sec=el("div","sec"+(sc.fx?" fxsec":""));sec.id="sec_"+sc.k;
+  sec.innerHTML=sc.fx?'<div class="bar"><div class="cap">'+sc.title+'</div></div><div class="fxbody" id="fxbody"></div>':
+   '<div class="bar"><div class="cap">'+sc.title+'</div><input type="range" id="sl_'+sc.k+'" min="0" max="0" value="0" style="min-width:40px"><div class="btn" id="min_'+sc.k+'" title="Remove the selected (or last) strip here">-</div><div class="btn plus" id="plus_'+sc.k+'" title="Add (list reads live while open)">+ &#9662;</div></div><div class="scroller" id="sc_'+sc.k+'"></div>';
+  mainEl.appendChild(sec);
+});
+function build(){
+  meters.length=0;
+  SECS.forEach(sc=>{if(sc.fx)return;const c=$("#sc_"+sc.k),l=c.scrollLeft;c.innerHTML="";sc.items().forEach(x=>c.appendChild(sc.mk(x)));c.scrollLeft=l;});
+  syncSliders();buildMedia();if(window.fxReady)buildFx();
+}
+function syncSlider(sl,sc){const mx=Math.max(0,sc.scrollWidth-sc.clientWidth);sl.max=mx;sl.disabled=mx<=0;sl.value=sc.scrollLeft;}
+function syncSliders(){SECS.forEach(sc=>{if(!sc.fx)syncSlider($("#sl_"+sc.k),$("#sc_"+sc.k));});}
+SECS.forEach(sc=>{if(sc.fx)return;const c=$("#sc_"+sc.k);
+  $("#sl_"+sc.k).addEventListener("input",e=>c.scrollLeft=+e.target.value);
+  c.addEventListener("wheel",e=>{e.preventDefault();c.scrollLeft+=e.deltaY+e.deltaX;syncSliders();},{passive:false});
+  new ResizeObserver(syncSliders).observe(c);});
+const scrollEnd=sc=>requestAnimationFrame(()=>{sc.scrollLeft=sc.scrollWidth;syncSliders();});
+const CAP=8,cntS=k=>strips.filter(s=>k==="hw"?s.type==="hw":s.type!=="hw").length,cntB=k=>buses.filter(b=>b.type===(k==="ha"?"a":"b")).length;
+const fullS=k=>cntS(k)>=CAP,fullB=k=>cntB(k)>=CAP;
+const addS=(t,d,k)=>{if(fullS(k))return;addStrip(t,d);build();scrollEnd($("#sc_"+k));},addB=(t,d,k)=>{if(fullB(k))return;addBus(t,d);build();scrollEnd($("#sc_"+k));};
+$("#plus_hw").addEventListener("click",e=>{e.stopPropagation();showMenu($("#plus_hw"),()=>{
+  const used=new Set(strips.filter(s=>s.type==="hw").map(s=>s.dev)),L=liveIn();
+  if(fullS("hw"))return[{label:"Hardware Inputs is full (8 / 8 strips). Remove one with [ - ] first.",title:true}];
+  return[{live:true,label:`<span class="dot">●</span> LIVE &nbsp;${L.length} hardware inputs found &nbsp;<span style="color:var(--dim)">scanned ${stamp()}</span>`},
+    {label:"Hardware inputs (click one to add it):",title:true},
+    ...L.map(d=>used.has(d)?{label:"   "+d+"   (in use)",title:true}:{label:"+ "+d,fn:()=>addS("hw",d,"hw")}),
+    {label:"+ Empty hardware input (pick device later)",fn:()=>addS("hw","","hw")}];});});
+$("#plus_vi").addEventListener("click",e=>{e.stopPropagation();showMenu($("#plus_vi"),()=>fullS("vi")?[{label:"Virtual Inputs is full (8 / 8 strips, network inputs count). Remove one with [ - ] first.",title:true}]:[
+  {label:"Virtual inputs ("+cntS("vi")+" / 8):",title:true},
+  {label:"+ Virtual input (new playback device for apps)",fn:()=>addS("virt",null,"vi")},
+  {label:"+ Network input (VBAN)",fn:()=>addS("net",null,"vi")}]);});
+$("#plus_ha").addEventListener("click",e=>{e.stopPropagation();showMenu($("#plus_ha"),()=>{
+  const used=new Set(buses.filter(b=>b.type==="a").map(b=>b.dev)),L=liveOut();
+  if(fullB("ha"))return[{label:"Hardware Out is full (8 / 8 buses: A1-A8). Remove one with [ - ] first.",title:true}];
+  return[{live:true,label:`<span class="dot">●</span> LIVE &nbsp;${L.length} outputs found &nbsp;<span style="color:var(--dim)">scanned ${stamp()}</span>`},
+    {label:"Hardware outs (A) (click one to add it):",title:true},
+    ...L.map(d=>used.has(d)?{label:"   "+d+"   (in use)",title:true}:{label:"+ "+d,fn:()=>addB("a",d,"ha")}),
+    {label:"+ Empty hardware out (pick device later)",fn:()=>addB("a","","ha")}];});});
+$("#plus_vb").addEventListener("click",e=>{e.stopPropagation();showMenu($("#plus_vb"),()=>fullB("vb")?[{label:"Virtual Out is full (8 / 8 buses: B1-B8). Remove one with [ - ] first.",title:true}]:[
+  {label:"Virtual outs (B) ("+cntB("vb")+" / 8):",title:true},{label:"+ Virtual mic (B) for Discord / OBS / VRChat",fn:()=>addB("b",null,"vb")}]);});
+function rmStrip(k){const L=SECS.find(x=>x.k===k).items();if(!L.length)return;const s=L.includes(selStrip)?selStrip:L[L.length-1];strips.splice(strips.indexOf(s),1);selStrip=null;build();}
+function rmBus(k){const L=SECS.find(x=>x.k===k).items();if(!L.length)return;const b=L.includes(selBus)?selBus:L[L.length-1];buses.splice(buses.indexOf(b),1);strips.forEach(s=>delete s.routes[b.id]);files.forEach(f=>delete f.routes[b.id]);selBus=null;build();}
+$("#min_hw").addEventListener("click",()=>rmStrip("hw"));$("#min_vi").addEventListener("click",()=>rmStrip("vi"));
+$("#min_ha").addEventListener("click",()=>rmBus("ha"));$("#min_vb").addEventListener("click",()=>rmBus("vb"));
+(()=>{const b=el("div","btn","FILL 8 / 8 / 8 / 8 (demo)");b.style.cssText="position:fixed;right:8px;bottom:8px;z-index:50;padding:3px 8px";
+  b.addEventListener("click",()=>{while(!fullS("hw"))addStrip("hw","");while(!fullS("vi"))addStrip(cntS("vi")%3===2?"net":"virt");while(!fullB("ha"))addBus("a","");while(!fullB("vb"))addBus("b");build();});document.body.appendChild(b);})();
+$("#engstat").innerHTML='<span class="g">●</span> ENGINE OK &nbsp; 48000 Hz / 256 &nbsp; xruns 0 &nbsp; DSP 9%';
+function fit(){window.__scale=1;const f=$("#fit"),lock=(window.LS?LS.lock169:true)!==false;let w=innerWidth,h=innerHeight;if(lock){w=Math.min(innerWidth,innerHeight*16/9);h=w*9/16;}f.style.width=w+"px";f.style.height=h+"px";f.style.left=(innerWidth-w)/2+"px";f.style.top=(innerHeight-h)/2+"px";}
+addEventListener("resize",fit);fit();
+
+/* ---------- media routing: live summary, mouse tooltip, routing popup ---------- */
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fmtDb=v=>v<=-59.5?"-inf":(v>=0?"+":"")+v.toFixed(1)+" dB";
+function busDevName(b){return b.type==="a"?(b.dev||"NO DEVICE"):"VertiMeeter Out "+b.label;}
+function activeIds(f){return routeIds().filter(id=>f.routes[id]);}
+function updateRouteBtn(f){
+  if(!f.rtEl)return;const a=activeIds(f),U=x=>x.toUpperCase();
+  f.rtEl.textContent=!a.length?"→ (none)":a.length<=3?"→ "+a.map(U).join(" "):"→ "+a.slice(0,2).map(U).join(" ")+" …";
+}
+const tip=el("div");tip.id="tip";document.body.appendChild(tip);
+function tipHtml(f){
+  const a=activeIds(f);if(!a.length)return "<b>Not routed anywhere</b><br><i>click to pick outputs</i>";
+  return "<b>"+esc(f.name)+"</b> plays to:<br>"+a.map(id=>{const b=buses.find(x=>x.id===id);
+    return id.toUpperCase()+" &nbsp;"+esc(busDevName(b))+" &nbsp;<span class='v'>"+fmtDb(f.gain+((f.send&&f.send[id])||0))+"</span>";}).join("<br>")+"<br><i>click for exact outputs + levels</i>";
+}
+function moveTip(e){let x=e.clientX+14,y=e.clientY+18;if(x+tip.offsetWidth>innerWidth-4)x=e.clientX-tip.offsetWidth-10;if(y+tip.offsetHeight>innerHeight-4)y=e.clientY-tip.offsetHeight-10;tip.style.left=Math.max(2,x)+"px";tip.style.top=Math.max(2,y)+"px";}
+function showTip(f,e){tip.innerHTML=tipHtml(f);tip.style.display="block";moveTip(e);}
+function hideTip(){tip.style.display="none";}
+function placeMenu(m,anchor){const win=$("#win"),wr=win.getBoundingClientRect(),ar=anchor.getBoundingClientRect(),sc=window.__scale||1;
+  let x=(ar.left-wr.left)/sc,y=(ar.bottom-wr.top)/sc;if(x+m.offsetWidth>win.clientWidth-6)x=win.clientWidth-6-m.offsetWidth;if(y+m.offsetHeight>win.clientHeight-6)y=Math.max(2,(ar.top-wr.top)/sc-m.offsetHeight);
+  m.style.left=Math.max(2,x)+"px";m.style.top=y+"px";}
+const popRows=()=>routeIds().map(id=>id+"|"+busDevName(buses.find(b=>b.id===id))).join(",");
+function showRoutePop(anchor,f){closeMenu();openAnchor=anchor;openFn=null;popFile=f;popSig=popRows();renderRoutePop(anchor,f);}
+function renderRoutePop(anchor,f){
+  f.send=f.send||{};const m=el("div","menu rpop");m.addEventListener("click",e=>e.stopPropagation());
+  m.appendChild(el("div","rhd","<b style='color:var(--accenthi)'>ROUTING</b> &nbsp;"+esc(f.name)+" &nbsp;<span style='color:var(--dim)'>("+routeIds().length+" outputs, list updates live)</span>"));
+  routeIds().forEach(id=>{
+    const b=buses.find(x=>x.id===id),on=!!f.routes[id],r=el("div","rrow");
+    const cb=el("div","rcb"+(on?" on":""),on?"x":"");cb.title="Play this file to "+id.toUpperCase();
+    cb.addEventListener("click",()=>{f.routes[id]=!f.routes[id];updateRouteBtn(f);renderRoutePop(anchor,f);});
+    const nm=el("div","rbus"+(id[0]==="b"?" b":""),id.toUpperCase()),dv=el("div","rdev",esc(busDevName(b)));dv.title=busDevName(b);
+    const sl=el("input");sl.type="range";sl.min=-60;sl.max=12;sl.step=.5;sl.value=f.send[id]||0;sl.disabled=!on;
+    const rd=el("span","rrd");const u=()=>rd.textContent=fmtDb(f.gain+(f.send[id]||0));u();
+    sl.title="Level of this file going to "+id.toUpperCase()+" (added to the file's own volume). Double-click = 0";
+    sl.addEventListener("input",()=>{f.send[id]=+sl.value;u();});sl.addEventListener("dblclick",()=>{f.send[id]=0;sl.value=0;u();});
+    r.append(cb,nm,dv,sl,rd);m.appendChild(r);});
+  const ft=el("div","rfoot");
+  [["ALL",()=>routeIds().forEach(i=>f.routes[i]=true)],["NONE",()=>routeIds().forEach(i=>f.routes[i]=false)],["A ONLY",()=>routeIds().forEach(i=>f.routes[i]=i[0]==="a")],["RESET LEVELS",()=>f.send={}]].forEach(([t,fn])=>{
+    const bt=el("div","btn",t);bt.addEventListener("click",()=>{fn();updateRouteBtn(f);renderRoutePop(anchor,f);});ft.appendChild(bt);});
+  m.appendChild(ft);
+  if(openMenu)openMenu.remove();$("#win").appendChild(m);openMenu=m;placeMenu(m,anchor);
+}
+setInterval(()=>{if(openMenu&&!openFn&&popFile){const sg=popRows();if(sg!==popSig){popSig=sg;updateRouteBtn(popFile);renderRoutePop(openAnchor,popFile);}}},1000);
+
+
+function paintRange(i){const mn=+i.min||0,mx=+i.max||100;i.style.setProperty("--p",((+i.value-mn)/(mx-mn)*100)+"%");}
+document.addEventListener("input",e=>{if(e.target.type==="range")paintRange(e.target);});
+new MutationObserver(()=>document.querySelectorAll("input[type=range]").forEach(paintRange)).observe(document.body,{childList:true,subtree:true});
+setInterval(()=>document.querySelectorAll("input[type=range]").forEach(paintRange),400);
+/* ---------- dialog framework + helpers ---------- */
+const dlgs={};let dzTop=100,dlgN=0;
+function dialog(id,title,w,bodyFn,onClose){
+  if(dlgs[id]){dlgs[id].style.zIndex=++dzTop;return dlgs[id];}
+  const d=el("div","dlg");d.style.width=w+"px";d.style.zIndex=++dzTop;const n=(dlgN++%8);d.style.left=(120+n*28)+"px";d.style.top=(70+n*28)+"px";
+  const h=el("div","dh","<span>"+esc(title)+"</span><span class='px' title='Close'>×</span>");
+  const b=el("div","db");d.append(h,b);$("#win").appendChild(d);dlgs[id]=d;
+  const close=()=>{d.remove();delete dlgs[id];onClose&&onClose();};
+  h.querySelector(".px").addEventListener("click",close);
+  d.addEventListener("pointerdown",()=>{d.style.zIndex=++dzTop;});
+  dragger(h,()=>({x:parseFloat(d.style.left),y:parseFloat(d.style.top)}),(st,dx,dy)=>{d.style.left=Math.max(0,st.x+dx)+"px";d.style.top=Math.max(0,st.y+dy)+"px";});
+  bodyFn(b,close);return d;
+}
+function kn(o,k,label,lo,hi,def,f,bip){return Knob(label,lo,hi,def,f||(v=>v.toFixed(1)),!!bip,o,k);}
+const F1=v=>v.toFixed(1),F0=v=>v.toFixed(0),FDBF=v=>(v>=0?"+":"")+v.toFixed(1),FMS=v=>v.toFixed(0)+"ms",FPCT=v=>v.toFixed(0)+"%",FHZ=v=>v>=1000?(v/1000).toFixed(1)+"k":v.toFixed(0);
+function drow(...k){const r=el("div","drow");k.forEach(x=>x&&r.append(x));return r;}
+function dcap(t){return el("div","dcap",t);}
+function dl(t){return el("div","dl",t);}
+function tog(label,o,k,cls,fn){const b=el("div","btn "+(cls||"")+(o[k]?" on":""),label);b.addEventListener("click",()=>{o[k]=!o[k];b.classList.toggle("on");fn&&fn();});return b;}
+function act(label,fn,cls){const b=el("div","btn "+(cls||""),label);b.addEventListener("click",fn);return b;}
+function sel(opts,o,k,fn){const s=el("select");opts.forEach(x=>s.appendChild(el("option",null,esc(x))));s.value=o[k];s.addEventListener("change",()=>{o[k]=s.value;fn&&fn();});return s;}
+function sld(label,o,k,lo,hi,step,f){const r=el("div","srow"),l=el("span","dl",label),i=el("input"),v=el("span","dv"),d0=o[k];
+  i.type="range";i.min=lo;i.max=hi;i.step=step;i.value=o[k];const u=()=>v.textContent=(f||F1)(+o[k]);u();
+  i.addEventListener("input",()=>{o[k]=+i.value;u();});i.addEventListener("dblclick",()=>{o[k]=d0;i.value=d0;u();});r.append(l,i,v);return r;}
+function note(t){return el("div","dnote",t);}
+/* ---------- Special FX model ---------- */
+const M={fxmode:"delay",
+  rev:{on:false,preset:"Hall A",dry:0,wet:-12,delay:0,eref:50,decay:100,eqL:0,eqM:0,eqH:0,byp:"off"},
+  dly:{on:false,dry:0,wet:-10,ratio:1,pre:0,fb:20,balL:0,balR:0,note:"1/8",fix:false,fit:false,byp:false,
+    taps:Array.from({length:8},(_,i)=>({g:i<4?-3*i:-12,p:i%2?0.4:-0.4,lp:12000,hp:60}))},
+  c5:{on:false,out:0,auto:true,byp:false,link:"ABS",x:[120,500,2000,6000],
+    bands:Array.from({length:5},()=>({en:true,solo:false,mute:false,g:0,th:-18,ra:3,at:20,re:200,kn:6,og:0,lim:0,ds:0}))},
+  ex1:0,ex2:0};
+const REV_PRESETS=[];["Small Room","Medium Room","Large Room","Studio","Chamber","Hall","Large Hall","Cathedral","Plate","Spring"].forEach(n=>["A","B","C"].forEach(v=>REV_PRESETS.push(n+" "+v)));
+M.rev.preset="Hall A";
+function buildFx(){
+  const b=$("#fxbody");if(!b)return;b.innerHTML="";
+  const box=(title,o,edit,sw)=>{const w=el("div","fxbox");w.appendChild(el("div","dcap",title));
+    const t=el("div","btn fxon"+(o.on?" on":""),o.on?"ON":"OFF");t.addEventListener("click",()=>{o.on=!o.on;buildFx();});
+    w.append(t,act("EDIT...",edit));if(sw)w.appendChild(sw);return w;};
+  b.appendChild(box("REVERB",M.rev,openReverb));
+  const c5=M.fxmode==="c5";
+  b.appendChild(box(c5?"C5 COMP":"DELAY",c5?M.c5:M.dly,c5?openC5:openDelay,act("Switch to "+(c5?"DELAY":"C5"),()=>{M.fxmode=c5?"delay":"c5";buildFx();},"sm")));
+  const ex=el("div","fxbox");ex.appendChild(el("div","dcap","EXTERNAL FX RETURN"));
+  const g=el("div","knobs");g.append(kn(M,"ex1","RET 1",-60,12,0,FDBF,false),kn(M,"ex2","RET 2",-60,12,0,FDBF,false));ex.appendChild(g);
+  ex.appendChild(act("JACK PORTS...",()=>openPatch("ext")));b.appendChild(ex);
+}
+function openReverb(){dialog("rev","JustVerb III style reverb",430,b=>{const o=M.rev;
+  b.append(drow(dl("PRESET"),sel(REV_PRESETS,o,"preset"),sel(["off","full bypass","EQ only bypass"],o,"byp")),
+   dcap("MIX"),drow(kn(o,"dry","DRY",-60,12,0,FDBF),kn(o,"wet","WET",-60,12,-12,FDBF),kn(o,"delay","PRE",0,1000,0,FMS),kn(o,"eref","E.REF",0,100,50,FPCT),kn(o,"decay","DECAY",50,200,100,FPCT)),
+   dcap("3-BAND EQ"),drow(kn(o,"eqL","LOW",-12,12,0,FDBF,true),kn(o,"eqM","MID",-12,12,0,FDBF,true),kn(o,"eqH","HIGH",-12,12,0,FDBF,true)),
+   note("Linux: own reverb in the engine (FDN/Freeverb style). Every strip has a REVERB send knob, every bus has a REVERB return knob."));});}
+function tapCanvas(){const c=el("canvas");c.width=400;c.height=70;c.className="tapcv";const draw=()=>{const g=c.getContext("2d");g.fillStyle="#050508";g.fillRect(0,0,400,70);
+  M.dly.taps.forEach((t,i)=>{const x=20+i*44*M.dly.ratio,h=Math.max(2,(t.g+60)/60*58);g.fillStyle=t.p<0?"#a64dff":"#ff5fa8";g.fillRect(x,66-h,12,h);});};draw();c._d=draw;return c;}
+function openDelay(){dialog("dly","MultiTap 8 delay",470,b=>{const o=M.dly,cv=tapCanvas(),rd=()=>cv._d();
+  const taps=el("div","tapgrid");
+  [["g","GAIN",-60,0,0,FDBF,false],["p","PAN",-1,1,0,v=>v.toFixed(1),true],["lp","LPF",200,20000,12000,FHZ,false],["hp","HPF",20,2000,60,FHZ,false]].forEach(([k,l,lo,hi,df,f,bp])=>{
+    M.dly.taps.forEach((t,i)=>{const K=Knob((i+1)+" "+l,lo,hi,df,f,bp,t,k);K.addEventListener("pointermove",rd);taps.appendChild(K);});});
+  b.append(drow(tog("BYPASS",o,"byp","mute"),act("TAP",()=>{},""),sel(["1/4","1/8","1/8T","1/16","3/4"],o,"note"),tog("SCALE FIT",o,"fit"),tog("FIX DELAY",o,"fix"),tog("AUTO FIT",o,"fit")),
+   dcap("TIMELINE (tap position = time x ratio, color = pan side)"),cv,
+   dcap("PER-TAP (rows: gain, pan, low-pass, high-pass)"),taps,
+   dcap("GLOBAL"),drow(kn(o,"dry","DRY",-60,12,0,FDBF),kn(o,"wet","WET",-60,12,-10,FDBF),kn(o,"ratio","RATIO",0.25,4,1,v=>v.toFixed(2),false),kn(o,"pre","PRE",0,1000,0,FMS),kn(o,"fb","FDBK",0,100,20,FPCT),kn(o,"balL","BAL L",-1,1,0,v=>v.toFixed(1),true),kn(o,"balR","BAL R",-1,1,0,v=>v.toFixed(1),true)),
+   note("Linux: own 8-tap delay in the engine. Timeline editor will let you drag tap bars."));});}
+function openC5(){dialog("c5","C5 multiband compressor",620,b=>{const o=M.c5;
+  const bandsEl=el("div","c5bands");
+  o.bands.forEach((bd,i)=>{const col=el("div","c5col");col.appendChild(el("div","dcap","BAND "+(i+1)));
+    col.appendChild(drow(tog("ON",bd,"en"),tog("S",bd,"solo","solo"),tog("M",bd,"mute","mute")));
+    const g=el("div","knobs");[["g","GAIN",-24,24,0,FDBF,true],["th","THR",-60,0,-18,FDBF,false],["ra","RATIO",1,20,3,v=>v.toFixed(1),false],["at","ATK",0.1,200,20,FMS,false],["re","REL",5,2000,200,FMS,false],["kn","KNEE",0,24,6,F1,false],["og","OUT",-24,24,0,FDBF,true],["lim","LIM",-24,0,0,FDBF,false],["ds","DIST",0,100,0,FPCT,false]].forEach(([k,l,lo,hi,df,f,bp])=>g.appendChild(Knob(l,lo,hi,df,f,bp,bd,k)));
+    col.appendChild(g);bandsEl.appendChild(col);});
+  const xo=el("div","drow");o.x.forEach((v,i)=>{const t={v};const K=Knob("X"+(i+1),40,16000,v,FHZ,false,t,"v");xo.appendChild(K);});
+  b.append(drow(tog("BYPASS",o,"byp","mute"),tog("AUTO MAKE-UP",o,"auto"),dl("LINK"),sel(["ABS","REL","independent"],o,"link"),act("LOAD..."),act("SAVE...")),
+   dcap("CROSSOVERS (4)"),xo,dcap("BANDS"),bandsEl,dcap("OUTPUT"),drow(kn(o,"out","OUT",-24,24,0,FDBF,true)),
+   note("Hardware strips feeding the C5 should have their bus buttons off: the C5 return already feeds the buses (same as Voicemeeter)."));});}
+
+/* ---------- strip controls (Potato style): Intellipan, sends, details, PEQ ---------- */
+const BUS_MODES=['Normal','Mix Down A','Mix Down B','Stereo Repeat','Composite','Up Mix TV','Up Mix 2.1','Up Mix 4.1','Up Mix 6.1','Left Only','Right Only','Center Only','LFE Only','Rear Only'];
+const PEQ_TYPES=["peak","low shelf","high shelf","low pass","high pass"];
+function newPeq(chs){return{ch:Array.from({length:chs},()=>({trim:0,delay:0,cells:[60,200,600,1500,4000,10000].map((f,i)=>({en:true,type:i===0?"low shelf":i===5?"high shelf":"peak",f,g:0,q:1}))})),sel:0,mem:"A"};}
+function bqMag(c,f,fs){const A=Math.pow(10,c.g/40),w0=2*Math.PI*c.f/fs,cw=Math.cos(w0),sw=Math.sin(w0),al=sw/(2*c.q);let b0,b1,b2,a0,a1,a2;
+  if(c.type==="peak"){b0=1+al*A;b1=-2*cw;b2=1-al*A;a0=1+al/A;a1=-2*cw;a2=1-al/A;}
+  else if(c.type==="low shelf"){const k=2*Math.sqrt(A)*al;b0=A*((A+1)-(A-1)*cw+k);b1=2*A*((A-1)-(A+1)*cw);b2=A*((A+1)-(A-1)*cw-k);a0=(A+1)+(A-1)*cw+k;a1=-2*((A-1)+(A+1)*cw);a2=(A+1)+(A-1)*cw-k;}
+  else if(c.type==="high shelf"){const k=2*Math.sqrt(A)*al;b0=A*((A+1)+(A-1)*cw+k);b1=-2*A*((A-1)+(A+1)*cw);b2=A*((A+1)+(A-1)*cw-k);a0=(A+1)-(A-1)*cw+k;a1=2*((A-1)-(A+1)*cw);a2=(A+1)-(A-1)*cw-k;}
+  else if(c.type==="low pass"){b0=(1-cw)/2;b1=1-cw;b2=(1-cw)/2;a0=1+al;a1=-2*cw;a2=1-al;}
+  else{b0=(1+cw)/2;b1=-(1+cw);b2=(1+cw)/2;a0=1+al;a1=-2*cw;a2=1-al;}
+  const w=2*Math.PI*f/fs,c1=Math.cos(w),s1=Math.sin(w),c2=Math.cos(2*w),s2=Math.sin(2*w);
+  const nr=b0+b1*c1+b2*c2,ni=-(b1*s1+b2*s2),dr=a0+a1*c1+a2*c2,di=-(a1*s1+a2*s2);
+  return 10*Math.log10((nr*nr+ni*ni)/(dr*dr+di*di));}
+function openPEQ(id,title,peq,nch){dialog(id,title,640,b=>{
+  const cv=el("canvas","peqcv");cv.width=600;cv.height=190;
+  const draw=()=>{const g=cv.getContext("2d"),W=600,H=190,ch=peq.ch[peq.sel];g.fillStyle="#050508";g.fillRect(0,0,W,H);
+    g.strokeStyle="#241f33";g.fillStyle="#7d7794";g.font="9px sans-serif";
+    [-18,-12,-6,0,6,12,18].forEach(d=>{const y=H/2-d*(H/2-8)/18;g.beginPath();g.moveTo(24,y);g.lineTo(W,y);g.stroke();g.fillText(d,2,y+3);});
+    [100,1000,10000].forEach(f=>{const x=24+(Math.log10(f)-Math.log10(20))/3*(W-24);g.beginPath();g.moveTo(x,0);g.lineTo(x,H);g.stroke();g.fillText(f>=1000?f/1000+"k":f,x+2,H-2);});
+    g.strokeStyle="#a64dff";g.lineWidth=2;g.beginPath();
+    for(let i=0;i<=300;i++){const f=20*Math.pow(1000,i/300);let db=0;ch.cells.forEach(c=>{if(c.en)db+=bqMag(c,f,48000);});const x=24+i/300*(W-24),y=H/2-Math.max(-24,Math.min(24,db))*(H/2-8)/18;i?g.lineTo(x,y):g.moveTo(x,y);}
+    g.stroke();g.lineWidth=1;ch.cells.forEach((c,i)=>{if(!c.en)return;const x=24+(Math.log10(c.f)-Math.log10(20))/3*(W-24);g.fillStyle="#ff5fa8";g.fillRect(x-3,H/2-c.g*(H/2-8)/18-3,6,6);});};
+  const grid=el("div","peqgrid");
+  const build=()=>{grid.innerHTML="";const ch=peq.ch[peq.sel];
+    ch.cells.forEach((c,i)=>{const col=el("div","c5col");col.appendChild(el("div","dcap","CELL "+(i+1)));
+      col.appendChild(drow(tog("ON",c,"en","",draw),sel(PEQ_TYPES,c,"type",draw)));
+      const g=el("div","knobs");[["f","FREQ",20,20000,c.f,FHZ,false],["g","GAIN",-36,18,0,FDBF,true],["q","Q",0.1,10,1,F1,false]].forEach(([k,l,lo,hi,df,f,bp])=>{const K=Knob(l,lo,hi,df,f,bp,c,k);K.addEventListener("pointermove",draw);K.addEventListener("wheel",draw);K.addEventListener("dblclick",draw);g.appendChild(K);});
+      col.appendChild(g);grid.appendChild(col);});
+    draw();};
+  const top=[];
+  if(nch>1){const o={v:"channel 1"},names=Array.from({length:nch},(_,i)=>"channel "+(i+1));const s=el("select");names.forEach(n=>s.appendChild(el("option",null,n)));s.value=names[peq.sel];s.addEventListener("change",()=>{peq.sel=names.indexOf(s.value);build();});top.push(dl("CHANNEL"),s);}
+  top.push(act("FLAT",()=>{peq.ch[peq.sel].cells.forEach(c=>c.g=0);build();}),act("A/B: "+peq.mem,function(){peq.mem=peq.mem==="A"?"B":"A";this.textContent="A/B: "+peq.mem;}));
+  if(nch>1)top.push(act("CH COPY",()=>{},""),act("COPY ALL",()=>peq.ch.forEach(c=>{c.cells=JSON.parse(JSON.stringify(peq.ch[peq.sel].cells));})),dl("TRIM"));
+  top.push(act("LOAD XML..."),act("SAVE XML..."));
+  b.append(drow(...top),cv);
+  if(nch>1){const t=peq.ch[peq.sel];b.appendChild(drow(dl("Per-channel trim / delay:"),kn(t,"trim","TRIM",-24,24,0,FDBF,true),kn(t,"delay","DELAY",0,500,0,FMS)));}
+  b.append(grid,note("Linux: 6 biquads per channel in the engine. Response curve above is the real RBJ math."));build();});}
+function openDetail(s,which){dialog("det"+s.title,"Strip detail: "+s.title,700,b=>{
+  const mk=(title,body)=>{const c=el("div","c5col");c.appendChild(el("div","dcap",title));body.forEach(x=>c.appendChild(x));return c;};
+  const kg=ks=>{const g=el("div","knobs");ks.forEach(([k,l,lo,hi,df,f,bp])=>g.appendChild(Knob(l,lo,hi,df,f||F1,!!bp,s.det,k)));return g;};
+  const d=s.det;
+  const comp=mk("COMPRESSOR",[kg([["cIn","IN",-24,24,0,FDBF,true],["cRa","RATIO",1,20,3],["cTh","THR",-60,0,-18,FDBF],["cAt","ATK",0.1,200,10,FMS],["cRe","REL",5,2000,100,FMS],["cKn","KNEE",0,24,6],["cOut","OUT",-24,24,0,FDBF,true]]),tog("AUTO MAKE-UP",d,"cAuto")]);
+  const gate=mk("GATE",[kg([["gTh","THR",-80,0,-50,FDBF],["gDm","DAMP",-80,0,-80,FDBF],["gAt","ATK",0.1,100,1,FMS],["gHo","HOLD",0,2000,100,FMS],["gRe","REL",5,2000,150,FMS]]),tog("BP SIDECHAIN",d,"gBp")]);
+  const den=mk("DENOISER",[kg([["dn","AMOUNT",0,10,0,F1],["dnf","FLOOR",-80,0,-60,FDBF]]),note("Any amount above 0 adds latency, same as Voicemeeter.")]);
+  const voice=mk("VOICE MODELER",[drow(tog("ENABLE",d,"vOn"),sel(["Preset 1","Preset 2","Preset 3","Preset 4","Preset 5","Preset 6","Preset 7","Preset 8"],d,"vPre")),kg([["vMix","DRY/WET",-100,100,0,FP0,true],["vPit","PITCH",-12,12,0,F1,true],["vFl","F LOW",-12,12,0,F1,true],["vFm","F MED",-12,12,0,F1,true],["vFh","F HIGH",-12,12,0,F1,true],["vFg","F GROUP",-12,12,0,F1,true]])]);
+  b.append(drow(comp,gate,den),drow(voice),note("Linux: comp/gate own DSP; denoiser = RNNoise; voice modeler = rubberband/WORLD (pitch + formants)."));});}
+function FP0(v){return (v>=0?"+":"")+v.toFixed(0)+"%";}
+/* intellipan pad */
+function ipEl(s){const w=el("div","ip");const cv=el("canvas");cv.width=116;cv.height=74;w.appendChild(cv);
+  const MODES=["Color panel","3D panel","Modulation"];
+  const draw=()=>{const g=cv.getContext("2d");g.fillStyle="#0a0912";g.fillRect(0,0,116,74);g.strokeStyle="#4a4560";g.strokeRect(.5,.5,115,73);
+    g.fillStyle="#7d7794";g.font="8px sans-serif";
+    if(s.ipMode===0){g.fillText("COLOR PANEL",4,10);g.fillText("brightness",4,70);g.strokeStyle="#241f33";g.beginPath();g.moveTo(58,16);g.lineTo(58,66);g.moveTo(8,41);g.lineTo(108,41);g.stroke();g.fillText("Lo",4,41);g.fillText("Hi",100,41);}
+    else if(s.ipMode===1){g.fillText("3D PANEL (binaural)",4,10);g.strokeStyle="#4a4560";g.beginPath();g.arc(58,41,10,0,7);g.stroke();g.fillText("front",48,22);g.fillText("rear",50,68);g.fillText("L",6,44);g.fillText("R",104,44);}
+    else{g.fillText("MODULATION",4,10);g.strokeStyle="#241f33";[10,22,34].forEach(r=>{g.beginPath();g.arc(58,41,r,0,7);g.stroke();});}
+    const x=58+s.ipx*48,y=41+s.ipy*26;g.fillStyle=s.ipMode===0?"#ff5fa8":s.ipMode===1?"#27b7ae":"#e8a21c";g.fillRect(x-4,y-4,8,8);
+    const off=Math.abs(s.ipx)+Math.abs(s.ipy)>0.02;g.fillStyle=off?"#e8a21c":"#2a2638";[0,1,2].forEach(i=>{g.beginPath();g.arc(100+i*5,8,2,0,7);g.fill();});};
+  const set=e=>{const r=cv.getBoundingClientRect(),sc=window.__scale||1;s.ipx=Math.max(-1,Math.min(1,((e.clientX-r.left)/sc-58)/48));s.ipy=Math.max(-1,Math.min(1,((e.clientY-r.top)/sc-41)/26));draw();};
+  let dn=false;cv.addEventListener("pointerdown",e=>{if(e.button)return;dn=true;cv.setPointerCapture(e.pointerId);set(e);});cv.addEventListener("pointermove",e=>{if(dn)set(e);});cv.addEventListener("pointerup",()=>dn=false);
+  cv.addEventListener("dblclick",()=>{s.ipx=0;s.ipy=0;draw();});
+  cv.addEventListener("contextmenu",e=>{e.preventDefault();showMenu(w,()=>MODES.map((m,i)=>({label:m,check:s.ipMode===i,fn:()=>{s.ipMode=i;s.ipx=0;s.ipy=0;draw();}})));});
+  cv.title="Intellipan. Drag the dot. Right-click: Color / 3D (binaural) / Modulation. Double-click = center.\n3D panel: top = in front of you, right = right ear only.";
+  draw();return w;}
+const PAN_MODES=["Normal","Mono","Repeat Mono","Repeat Stereo","Mix Down","Up Mix","Only L","Only R","Only C"];
+function panEl(s){const w=el("div","ip");const cv=el("canvas");cv.width=116;cv.height=70;w.appendChild(cv);
+  const draw=()=>{const g=cv.getContext("2d");g.fillStyle="#0a0912";g.fillRect(0,0,116,70);g.strokeStyle="#4a4560";g.strokeRect(.5,.5,115,69);g.fillStyle="#7d7794";g.font="8px sans-serif";
+    [["FL",14,12],["FC",58,8],["FR",102,12],["RL",14,60],["RR",102,60]].forEach(([n,x,y])=>{g.fillText(n,x-6,y+3);});g.fillText(s.panMode.toUpperCase(),32,66);
+    g.fillStyle="#a64dff";g.fillRect(58+s.pan*40-4,34+s.pany*20-4,8,8);};
+  const set=e=>{const r=cv.getBoundingClientRect(),sc=window.__scale||1;s.pan=Math.max(-1,Math.min(1,((e.clientX-r.left)/sc-58)/40));s.pany=Math.max(-1,Math.min(1,((e.clientY-r.top)/sc-34)/20));draw();};
+  let dn=false;cv.addEventListener("pointerdown",e=>{if(e.button)return;dn=true;cv.setPointerCapture(e.pointerId);set(e);});cv.addEventListener("pointermove",e=>{if(dn)set(e);});cv.addEventListener("pointerup",()=>dn=false);
+  cv.addEventListener("dblclick",()=>{s.pan=0;s.pany=0;draw();});
+  cv.addEventListener("contextmenu",e=>{e.preventDefault();showMenu(w,()=>PAN_MODES.map(m=>({label:m,check:s.panMode===m,fn:()=>{s.panMode=m;draw();}})));});
+  cv.title="5.1 pan pot. Drag. Right-click for pan mode. Double-click = center.\nLeft edge = left speaker only, right edge = right speaker only.";draw();return w;}
+function rcDetail(K,s,which){K.addEventListener("contextmenu",e=>{e.preventDefault();openDetail(s,which);});K.title+="\nRight-click: detailed parameters";return K;}
+function stripCtl(e,s){
+  const hw=s.type==="hw";
+  const lim=el("div","btn limb","LIM "+(s.lim>=12?"off":s.lim.toFixed(0)));
+  lim.title="Strip limiter -40..+12 dB. Click to step the value. Ctrl+click = yellow / green type";lim.style.color=s.limType==="green"?"#7dff9b":"#e8a21c";
+  lim.addEventListener("click",ev=>{if(ev.ctrlKey){s.limType=s.limType==="yellow"?"green":"yellow";lim.style.color=s.limType==="green"?"#7dff9b":"#e8a21c";return;}s.lim=s.lim>=12?-12:s.lim+6;lim.textContent="LIM "+(s.lim>=12?"off":s.lim.toFixed(0));});
+  const post=el("div","btn postb"+(s.post?" on":""),"POST");post.title="Send knobs: pre / post fader";post.addEventListener("click",()=>{s.post=!s.post;post.classList.toggle("on",s.post);});
+  const stack=el("div","stackb");stack.append(post,lim);
+  const row=(...k)=>{const g=el("div","knobs k3");k.forEach(x=>g.appendChild(x));return g;};
+  if(hw){
+    const h=el("div","iplab","<span>INTELLIPAN</span><span class='peqb'>EQ</span>");h.querySelector(".peqb").addEventListener("click",ev=>{ev.stopPropagation();openPEQ("peq"+s.title,"Parametric EQ: "+s.title,s.peq,1);});
+    e.append(h,ipEl(s));
+    e.appendChild(row(rcDetail(kn(s,"comp","COMP",0,10,0),s,"comp"),rcDetail(kn(s,"gate","GATE",0,10,0),s,"gate"),rcDetail(kn(s.det,"dn","DNS",0,10,0),s,"dn")));
+    e.appendChild(row(kn(s,"pan","PAN",-1,1,0,v=>(v>=0?"+":"")+v.toFixed(1),true),kn(s,"rvb","RVB",0,10,0),kn(s,"dly","DLY",0,10,0)));
+  }else{
+    e.appendChild(el("div","iplab","<span>EQUALIZER</span>"));
+    e.appendChild(row(kn(s,"bass","BASS",-12,12,0,FDBF,true),kn(s,"mid","MID",-12,12,0,FDBF,true),kn(s,"treble","TREB",-12,12,0,FDBF,true)));
+    e.appendChild(panEl(s));
+    const r=drow(tog("M.C.",s,"mc"));if(s.n===2&&s.type==="virt")r.appendChild(sel(["K off","K-m","K-1","K-2","Kv"],s,"karaoke"));r.classList.add("mini");e.appendChild(r);
+    e.appendChild(row(kn(s,"rvb","RVB",0,10,0),kn(s,"dly","DLY",0,10,0),kn(s,"pan","PAN",-1,1,0,v=>(v>=0?"+":"")+v.toFixed(1),true)));
+  }
+  e.appendChild(row(kn(s,"ex1","EXT 1",0,10,0),kn(s,"ex2","EXT 2",0,10,0),stack));
+  e.appendChild(fxRow(s,"Insert effects (top to bottom)"));
+}
+/* ---------- system dialogs ---------- */
+const SYS={rate:"48000",quantum:"256",monOut:"A1",fxdelay:"Delay",autoRestart:true,startup:false,tray:true,onTop:false,lock:false,hookKeys:"off",limitRemote:false,showOnLaunch:true,help:false,loadAtStart:false,sceneOnStart:"none",
+  syncDelay:{a1:0,a2:0,a3:0}};
+const REC={fmt:"WAV",mp3:"192 kbps",src:"post-fader buses (B1)",pre:20,prefix:"Record",multi:false,onload:false,loop:false,pgain:0,stopafter:"00:00:00",dir:"~/Music/VertiMeeter",on:false};
+function openSystem(){dialog("sys","System settings",500,b=>{const o=SYS;
+  b.append(dcap("ENGINE (PipeWire)"),
+   drow(dl("Sample rate (A1 sets it)"),sel(["32000","44100","48000","88200","96000","176400","192000"],o,"rate")),
+   drow(dl("Buffer (quantum)"),sel(["64","128","256","512","1024","2048"],o,"quantum"),dl("samples")),
+   drow(tog("Auto-restart engine if A1 or a device disconnects",o,"autoRestart")),
+   dcap("OUTPUT SYNC DELAY (compensate slow devices)"),sld("A1 delay (ms)",o.syncDelay,"a1",0,500,1,v=>v.toFixed(0)+" ms"),sld("A2 delay (ms)",o.syncDelay,"a2",0,500,1,v=>v.toFixed(0)+" ms"),sld("A3 delay (ms)",o.syncDelay,"a3",0,500,1,v=>v.toFixed(0)+" ms"),
+   dcap("MONITORING"),drow(dl("MON buttons play on"),sel(["A1","A2","A3"],o,"monOut")),
+   dcap("SPECIAL FX"),drow(dl("Second FX slot"),sel(["Delay","C5"],o,"fxdelay",()=>{M.fxmode=o.fxdelay==="C5"?"c5":"delay";buildFx();})),
+   drow(act("COMPOSITE PATCH...",openComposite),act("EXTERNAL FX / INSERT PORTS...",()=>openPatch("ext"))),
+   dcap("MISC"),drow(tog("Limit remote (MIDI) gain to 0 dB",o,"limitRemote")),drow(dl("Keyboard volume keys control"),sel(["off","A1","A2","Strip 1"],o,"hookKeys")),
+   note("Linux: sample rate / quantum are applied through PipeWire (pw-metadata clock.force-rate / clock.force-quantum)."));});}
+function openRecording(){dialog("rec","Recording options",500,b=>{const o=REC;
+  b.append(dcap("FILE"),drow(dl("Format"),sel(["WAV","BWF","AIFF","MP3","FLAC","OGG/Opus"],o,"fmt"),dl("MP3 quality"),sel(["32 kbps","128 kbps","192 kbps","320 kbps"],o,"mp3")),
+   drow(dl("Save to"),(()=>{const i=el("input");i.type="text";i.value=o.dir;i.style.width="260px";i.addEventListener("input",()=>o.dir=i.value);return i;})(),act("BROWSE...")),
+   drow(dl("File name prefix"),(()=>{const i=el("input");i.type="text";i.value=o.prefix;i.addEventListener("input",()=>o.prefix=i.value);return i;})()),
+   dcap("SOURCE"),drow(dl("Record from"),sel(["pre-fader inputs (mix)","post-fader buses (B1)","post-fader buses (A1)","post-fader buses (all)"],o,"src")),
+   drow(tog("MULTITRACK (one file per channel)",o,"multi")),
+   dcap("BUFFER + PLAYBACK"),sld("Pre-record buffer",o,"pre",0,60,1,v=>v.toFixed(0)+" s"),sld("Playback gain",o,"pgain",-24,12,.5,FDBF),
+   drow(tog("PLAY ON LOAD",o,"onload"),tog("LOOP",o,"loop")),drow(dl("Stop recording after (hh:mm:ss, 00:00:00 = off)"),(()=>{const i=el("input");i.type="text";i.value=o.stopafter;i.style.width="80px";i.addEventListener("input",()=>o.stopafter=i.value);return i;})()),
+   note("Linux: WAV/AIFF/BWF written directly, MP3/FLAC/Opus through ffmpeg. Pre-record buffer is a ring buffer in the engine."));});}
+const COMP_SRC=["default bus channel"];
+function openComposite(){dialog("comp","Composite patch (8 channels per bus)",520,b=>{
+  const o=SYS.comp=SYS.comp||{ch:Array.from({length:8},(_,i)=>({src:"default bus channel"}))};
+  const srcs=["default bus channel",...strips.flatMap(s=>[s.title+" L (pre)",s.title+" R (pre)",s.title+" L (post)",s.title+" R (post)"])];
+  const names=["1 Front L","2 Front R","3 Center","4 LFE","5 Rear L","6 Rear R","7 Side L","8 Side R"];
+  b.append(note("Used by buses whose mode is Composite. Each of the 8 bus channels can take any strip channel, pre or post fader."));
+  o.ch.forEach((c,i)=>b.appendChild(drow(dl(names[i]),sel(srcs,c,"src"))));
+  b.append(note("Click the source text in Voicemeeter switches pre/post; here use the list."));});}
+function openPatch(){dialog("patch","JACK ports: Virtual ASIO / Insert / External FX",560,b=>{
+  const rows=[["VAIO ASIO 1 (8ch in/out)","VertiMeeter:vaio1_in_1..8 / out_1..8","up to 4 clients"],["VAIO ASIO 2","VertiMeeter:vaio2_in_1..8 / out_1..8","up to 4 clients"],["VAIO ASIO 3","VertiMeeter:vaio3_in_1..8 / out_1..8","up to 4 clients"],
+    ["Virtual INSERT (34ch)","VertiMeeter:insert_send_1..34 / insert_return_1..34","1 client"],["External FX 1","VertiMeeter:ext1_send_L/R -> your plugin host -> VertiMeeter:ext1_return_L/R","needs a JACK/Carla host"],["External FX 2","VertiMeeter:ext2_send_L/R / ext2_return_L/R","needs a JACK/Carla host"]];
+  const g=el("div","dtab");["PORT GROUP","JACK NAMES","NOTES"].forEach(h=>g.appendChild(el("div","th",h)));
+  rows.forEach(r=>r.forEach(c=>g.appendChild(el("div","td",esc(c)))));b.append(g,drow(act("OPEN IN QPWGRAPH / HELVUM...")),
+   note("Linux replacement for Virtual ASIO: any JACK or PipeWire-JACK app (Ardour, Carla, OBS, Reaper) connects to these ports. Voicemeeter needs ASIO drivers for the same thing."));});}
+/* ---------- menubar ---------- */
+function setupMenus(){
+  const bar=document.querySelector(".menubar");bar.innerHTML="";
+  const M2=(name,items)=>{const sp=el("span",null,name);sp.addEventListener("click",e=>{e.stopPropagation();showMenu(sp,items);});bar.appendChild(sp);return sp;};
+  const ck=(label,o,k)=>({label,check:!!o[k],fn:()=>{o[k]=!o[k];}});
+  M2("File",()=>[{label:"Load settings...",fn:()=>{}},{label:"Save settings...",fn:()=>{}},{label:"Reset all settings",fn:()=>{}},ck("Load settings at startup",SYS,"loadAtStart"),"-",
+    {label:"Preset scenes (64)...",fn:openScenes},{label:"Release audio file",fn:()=>{}},"-",{label:"Shutdown",fn:()=>{}}]);
+  M2("Engine",()=>[{label:"Restart audio engine",fn:()=>{}},ck("Auto-restart if A1 / a device disconnects",SYS,"autoRestart"),"-",
+    {label:"System settings...",fn:openSystem},{label:"Check PipeWire setup...",fn:()=>dialog("chk","Check PipeWire setup",420,b=>{["pipewire","wireplumber","pipewire-jack","pipewire-pulse","pactl","pw-link","ffmpeg (media player)"].forEach(n=>b.appendChild(drow(el("span",null,"<span style='color:#7dff9b'>●</span> "+n+" &nbsp;<span style='color:var(--dim)'>found</span>"))));})},"-",
+    ck("Always on top",SYS,"onTop"),ck("Lock GUI",SYS,"lock"),ck("System tray",SYS,"tray"),ck("Run at login",SYS,"startup"),ck("Show window on launch",SYS,"showOnLaunch"),"-",
+    {label:"Keyboard volume keys control:",title:true},...["off","A1","A2","Strip 1"].map(v=>({label:"   "+v,check:SYS.hookKeys===v,fn:()=>SYS.hookKeys=v})),ck("Limit remote (MIDI) gain to 0 dB",SYS,"limitRemote")]);
+  M2("Record",()=>[{label:REC.on?"Stop recording":"Start recording",fn:()=>{REC.on=!REC.on;setStatus(REC.on?"RECORDING to "+REC.dir:"Recording stopped");}},{label:"Recording options...",fn:openRecording}]);
+  M2("Tools",()=>[{label:"VBAN network audio...",fn:openVban},{label:"Macro Buttons (80)...",fn:openMacros},{label:"MIDI mapping...",fn:openMidi},"-",{label:"Streamer view...",fn:openStreamer},{label:"Audio map (PipeWire graph)...",fn:openMap},"-",{label:"Composite patch...",fn:openComposite},{label:"JACK ports (ASIO / insert / external FX)...",fn:openPatch},{label:"Preset scenes...",fn:openScenes}]);
+  const th=M2("Theme",()=>themeItems());th.id="mTheme";
+  M2("Help",()=>[ck("Contextual help (hover tips)",SYS,"help"),"-",{label:"Feature list (FEATURES.md)",fn:()=>{}},{label:"About VertiMeeter '98",fn:()=>dialog("about","About",360,b=>b.append(el("div",null,"<b style='color:var(--accenthi)'>VertiMeeter '98</b><br>Linux mixer for PipeWire. Voicemeeter Potato feature parity.<br><br>mockup v4 - nothing here is audio yet."),note("Not affiliated with VB-Audio.")))}]);
+}
+function setStatus(t){$("#status").textContent=t;}
+
+/* ---------- VBAN / MIDI / macros / scenes / streamer / map ---------- */
+const VB={user:"vertical",color:"#a64dff",quality:"FAST",
+  in:Array.from({length:8},(_,i)=>({on:i===0,name:"Stream"+(i+1),ip:"",port:6980+i,sr:"48000",ch:"2",bits:"16",err:{ov:0,co:0,di:0,mi:0,un:0}})),
+  out:Array.from({length:8},(_,i)=>({on:false,name:"Stream"+(i+1),ip:"",port:6980+i,src:i<3?"B"+(i+1):"A"+(i-2),sr:"48000",ch:"2",bits:"16"})),
+  cmd:{on:true,name:"Command1",port:6980},midi:{on:false,name:"MIDI1"}};
+function vbanTable(list,isIn){const g=el("div","dtab vb");g.style.gridTemplateColumns="34px 1fr 1.1fr 56px "+(isIn?"":"62px ")+"66px 36px 50px "+(isIn?"92px":"");
+  const H=["ON","NAME","IP / HOST","PORT",...(isIn?[]:["SOURCE"]),"RATE","CH","BITS",...(isIn?["ERRORS"]:[])];H.forEach(h=>g.appendChild(el("div","th",h)));
+  list.forEach(o=>{const t=(k,w)=>{const i=el("input");i.type="text";i.value=o[k];if(w)i.style.width=w;i.addEventListener("input",()=>o[k]=i.value);const c=el("div","td");c.appendChild(i);return c;};
+    const on=el("div","td");on.appendChild(tog("",o,"on"));g.appendChild(on);g.appendChild(t("name"));g.appendChild(t("ip"));g.appendChild(t("port"));
+    if(!isIn){const c=el("div","td");c.appendChild(sel(["A1","A2","A3","A4","A5","B1","B2","B3"],o,"src"));g.appendChild(c);}
+    [["sr",["11025","22050","44100","48000","96000"]],["ch",["1","2","4","6","8"]],["bits",["16","24"]]].forEach(([k,opts])=>{const c=el("div","td");c.appendChild(sel(opts,o,k));g.appendChild(c);});
+    if(isIn){const c=el("div","td leds");["ov","co","di","mi","un"].forEach(k=>c.appendChild(el("i","led"+(o.err[k]?" r":""),"")));c.title="Overload / Corrupt / Disorder / Missing / Underrun";g.appendChild(c);}});
+  return g;}
+function openVban(){dialog("vban","VBAN network audio (UDP)",760,b=>{
+  b.append(drow(dl("Your name"),(()=>{const i=el("input");i.type="text";i.value=VB.user;i.addEventListener("input",()=>VB.user=i.value);return i;})(),dl("Network quality"),sel(["FAST","MEDIUM","SLOW"],VB,"quality"),act("VBAN-PING"),act("CHAT...")),
+   dcap("INCOMING AUDIO STREAMS (each feeds a network input strip)"),vbanTable(VB.in,true),
+   dcap("OUTGOING AUDIO STREAMS (from a bus)"),vbanTable(VB.out,false),
+   dcap("COMMAND / MIDI / TEXT"),drow(tog("COMMAND STREAM",VB.cmd,"on"),dl("name"),(()=>{const i=el("input");i.type="text";i.value=VB.cmd.name;i.addEventListener("input",()=>VB.cmd.name=i.value);return i;})(),dl("port"),(()=>{const i=el("input");i.type="text";i.value=VB.cmd.port;i.style.width="56px";i.addEventListener("input",()=>VB.cmd.port=i.value);return i;})(),tog("VBAN-MIDI",VB.midi,"on")),
+   note("Open VBAN protocol, UDP port 6980 by default. In your dorm (no port forwarding) run it over Tailscale: use the other machine's 100.x.x.x address. Broadcast 255 only works on wired LANs. A stream is matched by name + IP + port."));});}
+const MIDI={rows:[{ctl:"Strip 1 gain",type:"CC",ch:1,num:7,mode:"absolute"},{ctl:"Strip 1 mute",type:"Note",ch:1,num:36,mode:"toggle"},{ctl:"A1 gain",type:"CC",ch:1,num:10,mode:"absolute"}],device:"(none)",feedback:true};
+function openMidi(){dialog("midi","MIDI mapping",640,b=>{
+  const ctls=["Strip 1 gain","Strip 1 mute","Strip 1 solo","Strip 2 gain","A1 gain","A1 mute","B1 gain","Scene recall","Macro button","Media play/pause"];
+  const g=el("div","dtab");g.style.gridTemplateColumns="2fr 70px 50px 60px 100px 60px";["CONTROL","TYPE","CH","NUMBER","MODE",""].forEach(h=>g.appendChild(el("div","th",h)));
+  const draw=()=>{g.querySelectorAll(".r").forEach(x=>x.remove());MIDI.rows.forEach((r,i)=>{[["ctl",ctls],["type",["CC","Note","PitchBend"]]].forEach(([k,o])=>{const c=el("div","td r");c.appendChild(sel(o,r,k));g.appendChild(c);});
+    ["ch","num"].forEach(k=>{const c=el("div","td r"),n=el("input");n.type="text";n.style.width="44px";n.value=r[k];n.addEventListener("input",()=>r[k]=n.value);c.appendChild(n);g.appendChild(c);});
+    const m=el("div","td r");m.appendChild(sel(["absolute","relative","toggle","push"],r,"mode"));g.appendChild(m);const x=el("div","td r");x.appendChild(act("LEARN",()=>{r.num="...";draw();setTimeout(()=>{r.num=Math.floor(Math.random()*100);draw();},900);}));x.appendChild(act("×",()=>{MIDI.rows.splice(i,1);draw();}));g.appendChild(x);});};
+  draw();
+  b.append(drow(dl("MIDI device"),sel(["(none)","Launchpad MK2","Behringer X-Touch Mini","VBAN-MIDI"],MIDI,"device"),tog("FEEDBACK (lights/motor faders)",MIDI,"feedback")),g,drow(act("+ ADD MAPPING",()=>{MIDI.rows.push({ctl:"Strip 1 gain",type:"CC",ch:1,num:0,mode:"absolute"});draw();}),act("LOAD..."),act("SAVE...")),
+   note("Linux: ALSA/JACK MIDI via rtmidi. Learn mode: click LEARN, move a control on your surface."));});}
+const MAC={btns:Array.from({length:80},(_,i)=>({name:i<6?["Mute mic","PTT","Duck music","Scene 1","Scene 2","Sfx 1"][i]:"",color:"#4b1a7a",type:"PUSH",trig:"",press:"",release:"",on:false}))};
+function openMacros(){dialog("mac","Macro Buttons (80)",700,b=>{
+  const grid=el("div","macgrid");const ed=el("div","maced");
+  const draw=()=>{grid.innerHTML="";MAC.btns.forEach((m,i)=>{const t=el("div","macb"+(m.on?" on":"")+(m.name?"":" empty"),esc(m.name||String(i+1)));t.style.borderColor=m.color;
+    t.addEventListener("click",()=>{if(m.type==="2x"){m.on=!m.on;}draw();});t.addEventListener("contextmenu",e=>{e.preventDefault();edit(i);});grid.appendChild(t);});};
+  const edit=i=>{const m=MAC.btns[i];ed.innerHTML="";ed.append(dcap("BUTTON "+(i+1)+" (right-click a button to edit)"),
+    drow(dl("Name"),(()=>{const x=el("input");x.type="text";x.value=m.name;x.addEventListener("input",()=>{m.name=x.value;draw();});return x;})(),dl("Color"),(()=>{const x=el("input");x.type="color";x.value=m.color;x.addEventListener("input",()=>{m.color=x.value;draw();});return x;})(),sel(["PUSH","2x"],m,"type")),
+    drow(dl("Trigger"),sel(["(none)","Keyboard...","Mouse...","MIDI...","HID...","Game controller...","Audio level...","VBAN-TEXT script"],m,"trig")),
+    dl("Press script (Voicemeeter-style commands)"),(()=>{const x=el("textarea");x.rows=3;x.value=m.press||"Strip[0].Mute = 1;";x.addEventListener("input",()=>m.press=x.value);return x;})(),
+    dl("Release script"),(()=>{const x=el("textarea");x.rows=3;x.value=m.release||"Strip[0].Mute = 0;";x.addEventListener("input",()=>m.release=x.value);return x;})(),
+    drow(act("TEST"),act("COPY"),act("PASTE"),act("CLEAR",()=>{Object.assign(m,{name:"",press:"",release:"",trig:"(none)"});draw();edit(i);})));};
+  draw();edit(0);
+  b.append(grid,ed,note("Actions: mixer commands, MIDI out, keyboard/mouse events (ydotool/evdev), launch programs, DMX. Triggers: keyboard, mouse, MIDI, HID, gamepad (evdev), audio level, VBAN-TEXT."));});}
+const SCN={cur:0,names:Array.from({length:64},(_,i)=>i<4?["Streaming","Gaming + VC","Music only","Call"][i]:"")};
+function openScenes(){dialog("scn","Preset scenes (64)",620,b=>{
+  const grid=el("div","scngrid");const draw=()=>{grid.innerHTML="";SCN.names.forEach((n,i)=>{const t=el("div","scnb"+(SCN.cur===i?" on":"")+(n?"":" empty"),"<span class='fk'>"+(i<24?"F"+(i+1):i+1)+"</span> "+esc(n||"(empty)"));t.title="Click or Enter to recall. Right-click: store / rename";
+    t.addEventListener("click",()=>{SCN.cur=i;draw();setStatus("Scene recalled: "+(n||i+1));});
+    t.addEventListener("contextmenu",e=>{e.preventDefault();showMenu(t,()=>[{label:"Store current mix here",fn:()=>{SCN.names[i]=SCN.names[i]||"Scene "+(i+1);draw();}},{label:"Rename...",fn:()=>{const v=prompt("Scene name",n);if(v!=null){SCN.names[i]=v;draw();}}},{label:"Copy"},{label:"Paste"},{label:"Clear",fn:()=>{SCN.names[i]="";draw();}}]);});grid.appendChild(t);});};draw();
+  b.append(drow(act("STORE CURRENT"),act("RECALL"),act("LOAD FILE..."),act("SAVE FILE..."),dl("on startup"),sel(["none","last used","Scene 1"],SYS,"sceneOnStart")),grid,
+   note("Scenes hold mix + FX settings only, not device choices, system settings, MIDI or VBAN (same as Voicemeeter). F1-F24 recall scenes 1-24."));});}
+const STR={mode:"ABS",conn:"DIRECT"};
+function openStreamer(){dialog("str","Streamer view",420,b=>{
+  const lab=[...strips.slice(0,3).map(s=>({n:s.title,o:s})),...buses.slice(0,3).map(x=>({n:x.label,o:x}))];
+  b.append(drow(dl("Slider mode"),sel(["NO LINK","ABS","REL"],STR,"mode"),dl("Connection"),sel(["DIRECT","VBAN 1","VBAN 2","VBAN 3","VBAN 4"],STR,"conn")));
+  lab.forEach(l=>{const r=el("div","srow");const i=el("input");i.type="range";i.min=-60;i.max=12;i.step=.5;i.value=l.o.gain;i.addEventListener("input",()=>{l.o.gain=+i.value;});
+    r.append(el("span","dl",esc(l.n)),i,tog("MUTE",l.o,"mute","mute"));if(l.o.id)r.appendChild(el("span","dl","MON"));b.appendChild(r);});
+  b.append(note("Shows only the strips/buses you labeled. Can control a remote VertiMeeter over VBAN-TEXT."));});}
+function openMap(){dialog("map","Audio map (PipeWire graph)",720,b=>{
+  const apps=["LibreWolf","Spotify","java","equibop","mpv","OBS Studio"],mid=["VertiMeeter Input (VAIO)","VertiMeeter Aux (AUX)","VertiMeeter VAIO3","VertiMeeter engine"],dev=[...liveOut(),...liveIn().map(x=>x+" (in)")];
+  const cv=el("canvas");cv.width=690;cv.height=Math.max(apps.length,dev.length)*26+30;const g=cv.getContext("2d");g.font="11px sans-serif";
+  const col=(x,l,t,c)=>{g.fillStyle="#a64dff";g.fillText(t,x,14);l.forEach((n,i)=>{g.fillStyle="#12101a";g.fillRect(x,22+i*26,200,20);g.strokeStyle=c;g.strokeRect(x+.5,22.5+i*26,199,19);g.fillStyle="#c9c4d8";g.fillText(n.slice(0,30),x+6,36+i*26);});};
+  col(4,apps,"APPS","#4a4560");col(244,mid,"VERTIMEETER","#a64dff");col(484,dev,"DEVICES","#4a4560");
+  g.strokeStyle="#7a35c0";[[0,0],[1,0],[2,1],[3,1],[4,0],[5,2]].forEach(([a,m])=>{g.beginPath();g.moveTo(204,32+a*26);g.lineTo(244,32+m*26);g.stroke();});
+  [[3,0],[3,1],[3,3]].forEach(([m,d])=>{g.beginPath();g.moveTo(444,32+m*26);g.lineTo(484,32+d*26);g.stroke();});
+  b.append(drow(act("REFRESH"),act("ZOOM +"),act("ZOOM -"),act("ZERO PAD"),act("OPEN PAVUCONTROL"),act("OPEN HELVUM / QPWGRAPH")),cv,note("Live view of apps, VertiMeeter ports and devices. Replaces the Windows Audio Map."));});}
+
+/* ---------- layout: draggable borders (remembered) + Custom preset ---------- */
+const LK="vertimeeter_layout_v4";
+const LS={theme:"vert",lock169:true,saved:{},customName:"",preset:"default",edit:false,snap:true,w:{},mediaH:170,rects:{},hidden:{}};
+try{Object.assign(LS,JSON.parse(localStorage.getItem(LK)||"{}"));}catch(e){}
+function saveLS(){try{localStorage.setItem(LK,JSON.stringify(LS));}catch(e){}}
+const PAN={media:"#mediasec"},PNAME={media:"MEDIA PLAYER"};SECS.forEach(sc=>{PAN[sc.k]="#sec_"+sc.k;PNAME[sc.k]=sc.title;});
+const DEFW={hw:300,vi:450,fx:170};
+const area=$("#area"),scl=()=>window.__scale||1,clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),sn=v=>LS.snap?Math.round(v/8)*8:Math.round(v);
+function applyLayout(){
+  const cu=LS.preset==="custom";area.classList.toggle("custom",cu);area.dataset.layout=LS.preset;area.classList.toggle("edit",cu&&LS.edit);
+  Object.keys(PAN).forEach(k=>{const p=$(PAN[k]);p.style.left=p.style.top=p.style.width=p.style.height=p.style.flex=p.style.maxWidth=p.style.display="";
+    if(cu){const r=LS.rects[k];if(r){p.style.left=r.x+"px";p.style.top=r.y+"px";p.style.width=r.w+"px";p.style.height=r.h+"px";}if(LS.hidden[k])p.style.display="none";}});
+  if(!cu&&LS.preset==="default"){SECS.forEach(sc=>{const w=LS.w[sc.k]||DEFW[sc.k];if(w){const o=$(PAN[sc.k]);o.style.flex="none";o.style.width=w+"px";}});$("#mediasec").style.height=(LS.preset==="potato"?Math.min(LS.mediaH,150):LS.mediaH)+"px";}
+  syncSliders();buildEdBar&&buildEdBar();
+}
+function captureRects(){const ar=area.getBoundingClientRect(),s=scl();Object.keys(PAN).forEach(k=>{const r=$(PAN[k]).getBoundingClientRect();LS.rects[k]={x:Math.round((r.left-ar.left)/s),y:Math.round((r.top-ar.top)/s),w:Math.round(r.width/s),h:Math.round(r.height/s)};});}
+function setPreset(p){if(p==="custom"){if(!Object.keys(LS.rects).length){newCustom();return;}LS.edit=true;}LS.preset=p;saveLS();applyLayout();}
+function dragger(h,onStart,onMove){h.addEventListener("pointerdown",e=>{if(e.target.closest(".px"))return;e.preventDefault();h.setPointerCapture(e.pointerId);
+  const x0=e.clientX,y0=e.clientY,st=onStart();const mv=ev=>onMove(st,(ev.clientX-x0)/scl(),(ev.clientY-y0)/scl());
+  const up=()=>{h.removeEventListener("pointermove",mv);h.removeEventListener("pointerup",up);saveLS();};h.addEventListener("pointermove",mv);h.addEventListener("pointerup",up);});}
+let zTop=10;
+Object.keys(PAN).forEach(k=>{const p=$(PAN[k]);
+  const h=el("div","phead","<span>"+PNAME[k]+" &nbsp;(drag to move)</span><span class='px' title='Hide this panel (Theme menu brings it back)'>×</span>"),g=el("div","rgrip");g.title="Drag to resize";
+  p.prepend(h);p.appendChild(g);
+  h.querySelector(".px").addEventListener("click",e=>{e.stopPropagation();LS.hidden[k]=true;saveLS();applyLayout();});
+  const put=()=>{const r=LS.rects[k];p.style.left=r.x+"px";p.style.top=r.y+"px";p.style.width=r.w+"px";p.style.height=r.h+"px";};
+  dragger(h,()=>{p.style.zIndex=++zTop;return{...LS.rects[k]};},(st,dx,dy)=>{const r=LS.rects[k];r.x=clamp(sn(st.x+dx),0,area.clientWidth-60);r.y=clamp(sn(st.y+dy),0,area.clientHeight-24);put();});
+  dragger(g,()=>({...LS.rects[k]}),(st,dx,dy)=>{const r=LS.rects[k];r.w=clamp(sn(st.w+dx),160,area.clientWidth-r.x);r.h=clamp(sn(st.h+dy),90,area.clientHeight-r.y);put();});
+});
+document.querySelectorAll(".vsplit").forEach(sp=>{const k=sp.dataset.k;dragger(sp,()=>({w:$(PAN[k]).getBoundingClientRect().width/scl()}),(st,dx)=>{LS.w[k]=Math.round(clamp(st.w+dx,120,$(".main").clientWidth-300));applyLayout();});sp.addEventListener("dblclick",()=>{delete LS.w[k];saveLS();applyLayout();});});
+dragger($("#hsplit"),()=>({h:$("#mediasec").getBoundingClientRect().height/scl()}),(st,dx,dy)=>{LS.mediaH=Math.round(clamp(st.h-dy,70,area.clientHeight-130));applyLayout();});
+$("#hsplit").addEventListener("dblclick",()=>{LS.mediaH=170;saveLS();applyLayout();});
+function themeItems(){const cu=LS.preset==="custom";
+  const hdr=t=>({label:t,sec:true});
+  return[hdr("THEME  (colors)"),
+  {label:"VertiMeeter '98  (purple on black)",check:LS.theme!=="potato",fn:()=>setTheme("vert")},
+  {label:"Voicemeeter Potato  (1:1 colors, sampled)",check:LS.theme==="potato",fn:()=>setTheme("potato")},
+  {label:"Color samples (hex)...",fn:openSwatches},
+  hdr("LAYOUT"),
+  {label:"Default  (separate panes)",check:LS.preset==="default",fn:()=>setPreset("default")},
+  {label:"Voicemeeter Potato  (1:1 layout)",check:LS.preset==="potato",fn:()=>setPreset("potato")},
+  {label:"Custom  (starts as Default, place everything by hand)",check:cu,fn:()=>setPreset("custom")},
+  ...Object.keys(LS.saved).map(n=>({label:"   saved: "+n,check:cu&&LS.customName===n,fn:()=>loadCustom(n)})),
+  ...(cu?["-",
+    {label:"Edit layout  (drag headers to move, corners to resize)",check:LS.edit,fn:()=>{LS.edit=!LS.edit;saveLS();applyLayout();}},
+    {label:"Save layout",fn:saveCustom},{label:"Save layout as...",fn:()=>saveCustom(true)},{label:"Delete this saved layout",fn:()=>{delete LS.saved[LS.customName];LS.customName="";saveLS();}},
+    {label:"Snap to 8 px grid",check:LS.snap,fn:()=>{LS.snap=!LS.snap;saveLS();}},
+    {label:"Show panels:",title:true},
+    ...Object.keys(PAN).map(k=>({label:PNAME[k],check:!LS.hidden[k],fn:()=>{LS.hidden[k]=!LS.hidden[k];saveLS();applyLayout();}})),
+    "-",{label:"Start over from Default",fn:()=>newCustom()}]:[]),
+  hdr("WINDOW"),
+  {label:"Lock 16:9 aspect",check:LS.lock169!==false,fn:()=>{LS.lock169=LS.lock169===false;saveLS();fit();}},
+  {label:"Reset pane sizes",fn:()=>{LS.w={};LS.mediaH=170;saveLS();applyLayout();}}];}
+function openSwatches(){dialog("sw","Voicemeeter Potato colors (sampled from your screenshot)",460,b=>{
+  const L=[["window background","#2c3d4d"],["panel / strip","#354a59"],["header band","#36495a"],["idle button","#3f505e"],["button edge","#5d7385"],["name bar","#32485d"],["intellipan / well","#141f27"],["meter well","#0c0f12"],["fader / accent mint","#6ec592"],["fader dull mint","#78a196"],["text","#e8eef3"],["dim text","#9db0be"]];
+  const g=el("div","swg");L.forEach(([n,h])=>{const c=el("div","swc","<i style='background:"+h+"'></i>"+h+" "+n);g.appendChild(c);});
+  b.append(g,note("Sampled from the Voicemeeter Potato screenshot you sent. Used by the Potato theme."));});}
+function newCustom(){LS.preset="default";LS.edit=false;applyLayout();LS.rects={};LS.hidden={};captureRects();LS.preset="custom";LS.edit=true;LS.customName="";saveLS();applyLayout();}
+function loadCustom(n){const o=LS.saved[n];if(!o)return;LS.rects=JSON.parse(JSON.stringify(o.rects));LS.hidden=JSON.parse(JSON.stringify(o.hidden));LS.customName=n;LS.preset="custom";LS.edit=false;saveLS();applyLayout();}
+function saveCustom(asNew){let n=LS.customName;if(asNew===true||!n){n=prompt("Name this layout",n||"My layout");if(!n)return;}LS.customName=n;LS.saved[n]={rects:JSON.parse(JSON.stringify(LS.rects)),hidden:JSON.parse(JSON.stringify(LS.hidden))};saveLS();setStatus("Layout saved: "+n);buildEdBar();}
+function buildEdBar(){const e=$("#edbar");e.innerHTML="";e.append(el("span","nm","CUSTOM: "+(LS.customName||"(unsaved)")),act("SAVE",saveCustom),act("SAVE AS...",()=>saveCustom(true)),act("REVERT",()=>{LS.customName&&LS.saved[LS.customName]?loadCustom(LS.customName):newCustom();LS.edit=true;applyLayout();}),act("DONE",()=>{LS.edit=false;saveLS();applyLayout();}));}
+function setTheme(t){LS.theme=t;saveLS();document.documentElement.dataset.theme=t==="potato"?"potato":"";const P=t==="potato";Object.assign(TH,P?{acc:'#7fdbb0',hi:'#a9f0cc',dk:'#3d8f72',b:'#bff2dc'}:{acc:'#a64dff',hi:'#c18bff',dk:'#7a35c0',b:'#ff5fa8'});if(window.fxReady)build();}
+seed();build();window.fxReady=true;fit();setupMenus();setTheme(LS.theme||'vert');applyLayout();buildFx();
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

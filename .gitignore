@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.venv/
+dist/
+build/
+_old/
+_shots/
+*.egg-info/
+engine/target/
+tests/

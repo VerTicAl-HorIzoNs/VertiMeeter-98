@@ -1,0 +1,38 @@
+[package]
+name = "vertimeeter-engine"
+version = "0.13.0"
+edition = "2021"
+description = "VertiMeeter '98 realtime mixing core (JACK / pipewire-jack on Linux, WASAPI via cpal on Windows)"
+
+[[bin]]
+name = "vertimeeter-engine"
+path = "src/main.rs"
+
+[[bin]]
+name = "vmfxtest"
+path = "src/bin/vmfxtest.rs"
+required-features = ["jack-backend"]
+
+[features]
+# Linux (default): JACK client on pipewire-jack, the GUI links ports.
+default = ["jack-backend"]
+jack-backend = ["dep:jack"]
+# Software ports + the engine's own mixer thread + TCP control. No audio devices by itself (used for tests).
+soft-backend = []
+# Windows: soft-backend + real devices through cpal (WASAPI). Build: cargo build --release --no-default-features --features cpal-backend
+cpal-backend = ["soft-backend", "dep:cpal"]
+
+[dependencies]
+jack = { version = "0.13", optional = true }
+cpal = { version = "0.15", optional = true }
+serde_json = "1"
+nnnoiseless = "0.5"
+
+[target.'cfg(windows)'.dependencies]
+libloading = "0.8"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"

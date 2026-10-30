@@ -1,0 +1,3 @@
+PyQt6
+numpy; sys_platform == "win32"
+evdev; sys_platform == "linux"
